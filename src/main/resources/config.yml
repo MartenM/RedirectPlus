@@ -1,0 +1,36 @@
+# All the messages send by the plugin.
+messages:
+  redirected:
+    - "&f"
+    - "&cAn kick occurred in your connection. &cReason:&r %reason%"
+    - "&cYou have been send back to the main lobby."
+    - "&f"
+
+# The amount of time between checking if a server is online.
+# Players won't be connected to offline servers.
+check: 30
+
+# Blacklist. When a kick message contains this word they will NOT get redirected.
+blacklist:
+  - "ban"
+
+# Detect shutdown in server kick messages
+detect-shutdown: true
+detect-messages:
+  - "shutdown"
+  - "restart"
+  - "closed"
+
+# Bottom kick. When in one of the servers in this config, kick anyway.
+bottom-kick: true
+
+# The servers to which a player can be kicked.
+# FORMAT:
+#   bungeeServerName
+#     priority
+servers:
+  lobby1:
+    priority: 1
+  lobby2:
+    priority: 2
+
