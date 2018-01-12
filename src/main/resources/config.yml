@@ -11,20 +11,31 @@ messages:
 check: 30
 
 # Blacklist. When a kick message contains this word they will NOT get redirected.
+#            This will result in the player seeing the kick screen.
 blacklist:
   - "ban"
 
 # Detect shutdown in server kick messages
-detect-shutdown: true
-detect-messages:
+#   This can be faster for when you want to shutdowns servers and using RedirectPlus to redirect those people.
+detect-shutdown:
+  enabled: true
+  messages:
   - "shutdown"
   - "restart"
   - "closed"
 
-# Bottom kick. When in one of the servers in this config, kick anyway.
+# Don't show the redirect message if the message contains one of the following words.
+# Can be useful when redirecting people from a game lobby and stuff.
+no-messages:
+  - "[Silent]"
+
+# Bottom kick lobby. When in one of the servers in this config, kick anyway.
+#                    Prevents people from being connected from lobby to lobby resulting in infinite loops.
 bottom-kick: true
 
-# The servers to which a player can be kicked.
+# The servers to which a player can be kicked. Use the same name as in your BungeeCord config!
+# Additional note: If your server name contains a dot use a % instead of a space.
+#
 # FORMAT:
 #   bungeeServerName
 #     priority
@@ -33,4 +44,3 @@ servers:
     priority: 1
   lobby2:
     priority: 2
-

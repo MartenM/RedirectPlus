@@ -6,7 +6,7 @@
 
     <groupId>nl.martenm</groupId>
     <artifactId>redirect</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <repositories>
         <repository>
@@ -24,15 +24,6 @@
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0.2</version>
-                <configuration>
-                    <outputDirectory>D:\HDD_servers\MC plugin SERVER\A - BungeeTest Network\bungee\plugins</outputDirectory>
                 </configuration>
             </plugin>
         </plugins>

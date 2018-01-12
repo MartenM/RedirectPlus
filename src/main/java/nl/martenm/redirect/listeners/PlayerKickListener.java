@@ -7,7 +7,6 @@ import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ServerKickEvent;
 import net.md_5.bungee.api.plugin.Listener;
-import net.md_5.bungee.chat.BaseComponentSerializer;
 import net.md_5.bungee.event.EventHandler;
 import nl.martenm.redirect.RedirectPlus;
 import nl.martenm.redirect.objects.PriorityWrapper;
@@ -18,7 +17,7 @@ import nl.martenm.redirect.objects.PriorityWrapper;
  */
 public class PlayerKickListener implements Listener {
 
-    private RedirectPlus plugin;
+    private final RedirectPlus plugin;
 
     public PlayerKickListener(RedirectPlus plugin) {
         this.plugin = plugin;
@@ -42,8 +41,8 @@ public class PlayerKickListener implements Listener {
         }
 
         // Detect shutdown.
-        if(plugin.getConfig().getBoolean("detect-shutdown")){
-            for(String word : plugin.getConfig().getStringList("detect-messages")){
+        if(plugin.getConfig().getBoolean("detect-shutdown.enabled")){
+            for(String word : plugin.getConfig().getStringList("detect-shutdown.messages")){
                 if(BaseComponent.toLegacyText(event.getKickReasonComponent()).contains(word)){
                     plugin.updateServer(kickedFrom.getName(), false);
                     break;
@@ -53,7 +52,7 @@ public class PlayerKickListener implements Listener {
 
         // BottomKick
         if(plugin.getConfig().getBoolean("bottom-kick")){
-           if(plugin.getAllServers().stream().filter(server -> server.getServerInfo().getName().equalsIgnoreCase(kickedFrom.getName())).count() > 0 ){
+           if(plugin.getAllServers().stream().anyMatch(server -> server.getServerInfo().getName().equalsIgnoreCase(kickedFrom.getName()))){
                return;
            }
         }
@@ -77,9 +76,19 @@ public class PlayerKickListener implements Listener {
         event.setCancelled(true);
         event.setCancelServer(kickedTo);
 
-        for (String message : plugin.getConfig().getStringList("messages.redirected")) {
-            message = ChatColor.translateAlternateColorCodes('&', message.replace("%reason%", BaseComponent.toLegacyText(event.getKickReasonComponent())));
-            player.sendMessage(new ComponentBuilder(message).create());
+        boolean hideMessage = false;
+        for(String word : plugin.getConfig().getStringList("no-messages")){
+            if(BaseComponent.toLegacyText(event.getKickReasonComponent()).contains(word)){
+                hideMessage = true;
+                break;
+            }
+        }
+
+        if(!hideMessage) {
+            for (String message : plugin.getConfig().getStringList("messages.redirected")) {
+                message = ChatColor.translateAlternateColorCodes('&', message.replace("%reason%", BaseComponent.toLegacyText(event.getKickReasonComponent())));
+                player.sendMessage(new ComponentBuilder(message).create());
+            }
         }
     }
 }

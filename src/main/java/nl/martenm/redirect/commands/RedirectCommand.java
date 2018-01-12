@@ -3,7 +3,6 @@ package nl.martenm.redirect.commands;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.plugin.Command;
 import nl.martenm.redirect.RedirectPlus;
 import nl.martenm.redirect.objects.PriorityWrapper;
@@ -14,10 +13,10 @@ import nl.martenm.redirect.objects.PriorityWrapper;
  */
 public class RedirectCommand extends Command {
 
-    private RedirectPlus plugin;
+    private final RedirectPlus plugin;
 
     public RedirectCommand(RedirectPlus plugin) {
-        super("redirect", "redirectplus", "rd");
+        super("redirect", "redirectplus.admin", "rd");
         this.plugin = plugin;
     }
 
@@ -31,14 +30,20 @@ public class RedirectCommand extends Command {
         }
 
         if(strings[0].equalsIgnoreCase("help")){
-            commandSender.sendMessage(new ComponentBuilder(ChatColor.DARK_GRAY + "+──────┤ " + ChatColor.GREEN + ChatColor.BOLD + "Redirect" + ChatColor.GOLD + " + " + ChatColor.DARK_GRAY + "├──────+").create());
+            sendHeader(commandSender);
             commandSender.sendMessage(new ComponentBuilder(ChatColor.GREEN + "  " + "/rd servers").create());
             commandSender.sendMessage(new ComponentBuilder(ChatColor.GREEN + "  " + "/rd reload").create());
             return;
         }
 
+        else if(strings[0].equalsIgnoreCase("reload")){
+            plugin.reload();
+            commandSender.sendMessage(new ComponentBuilder(ChatColor.GREEN + "  " + "Successfully reloaded the config file.").create());
+            return;
+        }
+
         else if(strings[0].equalsIgnoreCase("servers")){
-            commandSender.sendMessage(new ComponentBuilder(ChatColor.DARK_GRAY + "+──────┤ " + ChatColor.GREEN + ChatColor.BOLD + "Redirect" + ChatColor.GOLD + " + " + ChatColor.DARK_GRAY + "├──────+").create());
+            sendHeader(commandSender);
             commandSender.sendMessage(new ComponentBuilder(ChatColor.GREEN + "Online servers:").create());
             for(PriorityWrapper info : plugin.getOnlineServer()){
                 commandSender.sendMessage(new ComponentBuilder("  " + ChatColor.GRAY + info.getServerInfo().getName()).create());
@@ -54,8 +59,12 @@ public class RedirectCommand extends Command {
     }
 
     private void sendHelp(CommandSender commandSender){
-        commandSender.sendMessage(new ComponentBuilder(ChatColor.DARK_GRAY + "+──────┤ " + ChatColor.GREEN + ChatColor.BOLD + "Redirect" + ChatColor.GOLD + " + " + ChatColor.DARK_GRAY + "├──────+").create());
+        sendHeader(commandSender);
         commandSender.sendMessage(new ComponentBuilder(ChatColor.GREEN + plugin.getDescription().getName() + " " + plugin.getDescription().getVersion()).create());
-        commandSender.sendMessage(new ComponentBuilder(ChatColor.DARK_GRAY + "Use " + ChatColor.GREEN + "/rd help" + ChatColor.DARK_GRAY + " for a list of commands.").create());
+        commandSender.sendMessage(new ComponentBuilder(ChatColor.GRAY + "Use " + ChatColor.GREEN + "/rd help" + ChatColor.GRAY + " for a list of commands.").create());
+    }
+
+    private void sendHeader(CommandSender commandSender){
+        commandSender.sendMessage(new ComponentBuilder(ChatColor.DARK_GRAY + "+──────┤ " + ChatColor.BLUE + ChatColor.BOLD + "Redirect" + ChatColor.GOLD + ChatColor.BOLD + " + " + ChatColor.DARK_GRAY + "├──────+").create());
     }
 }

@@ -1,9 +1,6 @@
 package nl.martenm.redirect;
 
 import com.google.common.io.ByteStreams;
-import javafx.collections.transformation.SortedList;
-import net.md_5.bungee.api.Callback;
-import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
@@ -13,6 +10,7 @@ import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 import nl.martenm.redirect.commands.RedirectCommand;
 import nl.martenm.redirect.listeners.PlayerKickListener;
+import nl.martenm.redirect.metrics.Metrics;
 import nl.martenm.redirect.objects.PriorityWrapper;
 
 import java.io.*;
@@ -29,6 +27,7 @@ public class RedirectPlus extends Plugin {
     private Configuration config;
     private List<PriorityWrapper> servers;
     private ScheduledTask checker;
+    private Metrics metrics = null;
 
     @Override
     public void onEnable() {
@@ -44,33 +43,11 @@ public class RedirectPlus extends Plugin {
         getLogger().info("Registering commands...");
         registerCommands();
 
-        for(String key : config.getSection("servers").getKeys()) {
-            ServerInfo info = getProxy().getServerInfo(key.replace("%", "."));
-            if (info == null) {
-                getLogger().warning("Failed to find the server: " + key);
-                continue;
-            }
-            servers.add(new PriorityWrapper(info, config.getInt("servers." + key + ".priority")));
-        }
+        getLogger().info("Doing magic stuff so that the plugin will work...");
+        setup();
 
-        servers.sort((o1, o2) ->
-                (o1.getPriority() > o2.getPriority() ? 1 : 0));
-
-        checker = getProxy().getScheduler().schedule(this, () -> {
-            for (PriorityWrapper server : servers) {
-                ServerInfo info = server.getServerInfo();
-
-                if (info == null) {
-                    continue;
-                }
-
-                info.ping((serverPing, throwable) -> {
-                    getProxy().getScheduler().schedule(this, () -> {
-                        server.setOnline(throwable == null);
-                    }, 1, TimeUnit.MILLISECONDS);
-                });
-            }
-        }, 0, config.getInt("check"), TimeUnit.SECONDS);
+        getLogger().info("Creating bStats.org metrics...");
+        metrics = new Metrics(this);
 
         getLogger().info("Successfully enabled Redirect Plus.");
     }
@@ -115,12 +92,46 @@ public class RedirectPlus extends Plugin {
         getProxy().getPluginManager().registerListener(this, new PlayerKickListener(this));
     }
 
+    private void setup(){
+        if(servers == null){
+            servers = new ArrayList<>();
+        } else servers.clear();
+
+        for(String key : config.getSection("servers").getKeys()) {
+            ServerInfo info = getProxy().getServerInfo(key.replace("%", "."));
+            if (info == null) {
+                getLogger().warning("Failed to find the server: " + key);
+                continue;
+            }
+            servers.add(new PriorityWrapper(info, config.getInt("servers." + key + ".priority")));
+        }
+
+        servers.sort((o1, o2) ->
+                (o1.getPriority() > o2.getPriority() ? 1 : 0));
+
+        checker = getProxy().getScheduler().schedule(this, () -> {
+            for (PriorityWrapper server : servers) {
+                ServerInfo info = server.getServerInfo();
+
+                if (info == null) {
+                    continue;
+                }
+
+                info.ping((serverPing, throwable) -> {
+                    getProxy().getScheduler().schedule(this, () -> {
+                        server.setOnline(throwable == null);
+                    }, 1, TimeUnit.MILLISECONDS);
+                });
+            }
+        }, 0, config.getInt("check"), TimeUnit.SECONDS);
+    }
+
     public Configuration getConfig() {
         return config;
     }
 
     public List<PriorityWrapper> getOnlineServer(){
-        return servers.stream().filter(s -> s.isOnline()).collect(Collectors.toList());
+        return servers.stream().filter(PriorityWrapper::isOnline).collect(Collectors.toList());
     }
 
     public List<PriorityWrapper> getOfflineServer(){
@@ -139,5 +150,11 @@ public class RedirectPlus extends Plugin {
             }
         }
         return false;
+    }
+
+    public void reload(){
+        registerConfig();
+        setup();
+        getLogger().info("Reload completed.");
     }
 }
