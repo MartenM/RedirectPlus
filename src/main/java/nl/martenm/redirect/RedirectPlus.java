@@ -92,6 +92,10 @@ public class RedirectPlus extends Plugin {
         getProxy().getPluginManager().registerListener(this, new PlayerKickListener(this));
     }
 
+    /**
+     * Creates the default task.
+     * Can also be used to reload the plugin.
+     */
     private void setup(){
         if(servers == null){
             servers = new ArrayList<>();
@@ -108,6 +112,10 @@ public class RedirectPlus extends Plugin {
 
         servers.sort((o1, o2) ->
                 (o1.getPriority() > o2.getPriority() ? 1 : 0));
+
+        if(checker != null){
+            checker.cancel();
+        }
 
         checker = getProxy().getScheduler().schedule(this, () -> {
             for (PriorityWrapper server : servers) {
@@ -130,18 +138,34 @@ public class RedirectPlus extends Plugin {
         return config;
     }
 
+    /**
+     * Method used to get the PriorityWrapper for a online servers.
+     * @return A list of servers in a PriorityWrapper
+     */
     public List<PriorityWrapper> getOnlineServer(){
         return servers.stream().filter(PriorityWrapper::isOnline).collect(Collectors.toList());
     }
 
+    /**
+     * Method used to get the PriorityWrapper for a offline servers.
+     * @return A list of servers in a PriorityWrapper
+     */
     public List<PriorityWrapper> getOfflineServer(){
         return servers.stream().filter(s -> !s.isOnline()).collect(Collectors.toList());
     }
 
+    /**
+     * Method used to get the PriorityWrapper for all servers.
+     * @return A list of servers in a PriorityWrapper
+     */
     public List<PriorityWrapper> getAllServers(){
         return servers;
     }
 
+    /**
+     * Remote void to change the server status of a server.
+     * @return true on success.
+     */
     public boolean updateServer(String name, Boolean online){
         for(PriorityWrapper wrapper : servers){
             if(wrapper.getServerInfo().getName().equalsIgnoreCase(name)){
@@ -152,6 +176,9 @@ public class RedirectPlus extends Plugin {
         return false;
     }
 
+    /**
+     * Method used to reload the plugin.
+     */
     public void reload(){
         registerConfig();
         setup();
