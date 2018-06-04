@@ -9,7 +9,7 @@ import net.md_5.bungee.api.event.ServerKickEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import nl.martenm.redirect.RedirectPlus;
-import nl.martenm.redirect.objects.PriorityWrapper;
+import nl.martenm.redirect.objects.RedirectServerWrapper;
 
 /**
  * @author MartenM
@@ -60,7 +60,7 @@ public class PlayerKickListener implements Listener {
         // KickedFrom == Kicked to. No change needed.
         if (kickedFrom == kickedTo) {
             boolean changed = false;
-            for(PriorityWrapper wrapper : plugin.getOnlineServer()){
+            for(RedirectServerWrapper wrapper : plugin.getOnlineServer()){
                 if(wrapper.getServerInfo() == kickedTo){
                     continue;
                 }

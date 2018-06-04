@@ -5,7 +5,7 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.plugin.Command;
 import nl.martenm.redirect.RedirectPlus;
-import nl.martenm.redirect.objects.PriorityWrapper;
+import nl.martenm.redirect.objects.RedirectServerWrapper;
 
 /**
  * @author MartenM
@@ -45,12 +45,12 @@ public class RedirectCommand extends Command {
         else if(strings[0].equalsIgnoreCase("servers")){
             sendHeader(commandSender);
             commandSender.sendMessage(new ComponentBuilder(ChatColor.GREEN + "Online servers:").create());
-            for(PriorityWrapper info : plugin.getOnlineServer()){
+            for(RedirectServerWrapper info : plugin.getOnlineServer()){
                 commandSender.sendMessage(new ComponentBuilder("  " + ChatColor.GRAY + info.getServerInfo().getName()).create());
             }
             commandSender.sendMessage(new ComponentBuilder("").create());
             commandSender.sendMessage(new ComponentBuilder(ChatColor.RED + "Offline servers:").create());
-            for(PriorityWrapper info: plugin.getOfflineServer()){
+            for(RedirectServerWrapper info: plugin.getOfflineServer()){
                 commandSender.sendMessage(new ComponentBuilder("  " + ChatColor.GRAY + info.getServerInfo().getName()).create());
             }
             return;

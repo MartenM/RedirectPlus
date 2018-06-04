@@ -6,13 +6,13 @@ import net.md_5.bungee.api.config.ServerInfo;
  * @author MartenM
  * @since 6-1-2018.
  */
-public class PriorityWrapper {
+public class RedirectServerWrapper {
 
     private ServerInfo serverInfo;
     private int priority;
     private boolean isOnline;
 
-    public PriorityWrapper(ServerInfo serverInfo, int priority){
+    public RedirectServerWrapper(ServerInfo serverInfo, int priority){
         this.serverInfo = serverInfo;
         this.priority = priority;
     }

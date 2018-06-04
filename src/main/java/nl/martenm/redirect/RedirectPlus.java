@@ -11,7 +11,7 @@ import net.md_5.bungee.config.YamlConfiguration;
 import nl.martenm.redirect.commands.RedirectCommand;
 import nl.martenm.redirect.listeners.PlayerKickListener;
 import nl.martenm.redirect.metrics.Metrics;
-import nl.martenm.redirect.objects.PriorityWrapper;
+import nl.martenm.redirect.objects.RedirectServerWrapper;
 
 import java.io.*;
 import java.util.*;
@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 public class RedirectPlus extends Plugin {
 
     private Configuration config;
-    private List<PriorityWrapper> servers;
+    private List<RedirectServerWrapper> servers;
     private ScheduledTask checker;
     private Metrics metrics = null;
 
@@ -107,7 +107,7 @@ public class RedirectPlus extends Plugin {
                 getLogger().warning("Failed to find the server: " + key);
                 continue;
             }
-            servers.add(new PriorityWrapper(info, config.getInt("servers." + key + ".priority")));
+            servers.add(new RedirectServerWrapper(info, config.getInt("servers." + key + ".priority")));
         }
 
         servers.sort((o1, o2) ->
@@ -118,7 +118,7 @@ public class RedirectPlus extends Plugin {
         }
 
         checker = getProxy().getScheduler().schedule(this, () -> {
-            for (PriorityWrapper server : servers) {
+            for (RedirectServerWrapper server : servers) {
                 ServerInfo info = server.getServerInfo();
 
                 if (info == null) {
@@ -139,26 +139,26 @@ public class RedirectPlus extends Plugin {
     }
 
     /**
-     * Method used to get the PriorityWrapper for a online servers.
-     * @return A list of servers in a PriorityWrapper
+     * Method used to get the RedirectServerWrapper for a online servers.
+     * @return A list of servers in a RedirectServerWrapper
      */
-    public List<PriorityWrapper> getOnlineServer(){
-        return servers.stream().filter(PriorityWrapper::isOnline).collect(Collectors.toList());
+    public List<RedirectServerWrapper> getOnlineServer(){
+        return servers.stream().filter(RedirectServerWrapper::isOnline).collect(Collectors.toList());
     }
 
     /**
-     * Method used to get the PriorityWrapper for a offline servers.
-     * @return A list of servers in a PriorityWrapper
+     * Method used to get the RedirectServerWrapper for a offline servers.
+     * @return A list of servers in a RedirectServerWrapper
      */
-    public List<PriorityWrapper> getOfflineServer(){
+    public List<RedirectServerWrapper> getOfflineServer(){
         return servers.stream().filter(s -> !s.isOnline()).collect(Collectors.toList());
     }
 
     /**
-     * Method used to get the PriorityWrapper for all servers.
-     * @return A list of servers in a PriorityWrapper
+     * Method used to get the RedirectServerWrapper for all servers.
+     * @return A list of servers in a RedirectServerWrapper
      */
-    public List<PriorityWrapper> getAllServers(){
+    public List<RedirectServerWrapper> getAllServers(){
         return servers;
     }
 
@@ -167,7 +167,7 @@ public class RedirectPlus extends Plugin {
      * @return true on success.
      */
     public boolean updateServer(String name, Boolean online){
-        for(PriorityWrapper wrapper : servers){
+        for(RedirectServerWrapper wrapper : servers){
             if(wrapper.getServerInfo().getName().equalsIgnoreCase(name)){
                 wrapper.setOnline(online);
                 return true;
