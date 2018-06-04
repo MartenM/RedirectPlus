@@ -10,6 +10,7 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import nl.martenm.redirect.RedirectPlus;
 import nl.martenm.redirect.objects.RedirectServerWrapper;
+import nl.martenm.redirect.objects.ServerGroup;
 
 /**
  * @author MartenM
@@ -27,12 +28,7 @@ public class PlayerKickListener implements Listener {
     public void handleKickEvent(ServerKickEvent event) {
         ProxiedPlayer player = event.getPlayer();
 
-        if (plugin.getOnlineServer().size() < 1) {
-            return;
-        }
-
         ServerInfo kickedFrom = event.getKickedFrom();
-        ServerInfo kickedTo = plugin.getOnlineServer().get(0).getServerInfo();
 
         // Blacklist
         for(String word : plugin.getConfig().getStringList("blacklist")) {
@@ -50,31 +46,22 @@ public class PlayerKickListener implements Listener {
             }
         }
 
-        // BottomKick
-        if(plugin.getConfig().getBoolean("bottom-kick")){
-           if(plugin.getAllServers().stream().anyMatch(server -> server.getServerInfo().getName().equalsIgnoreCase(kickedFrom.getName()))){
-               return;
-           }
+        // Get the server group etccc
+        RedirectServerWrapper redirectServerWrapper = plugin.getServer(kickedFrom.getName());
+        ServerGroup serverGroup = null;
+        if(redirectServerWrapper != null) {
+            serverGroup = redirectServerWrapper.getServerGroup();
+        } else serverGroup = plugin.getUnkownServerGroup();
+
+        if(serverGroup.isBottomKick()) {
+            return;
         }
 
-        // KickedFrom == Kicked to. No change needed.
-        if (kickedFrom == kickedTo) {
-            boolean changed = false;
-            for(RedirectServerWrapper wrapper : plugin.getOnlineServer()){
-                if(wrapper.getServerInfo() == kickedTo){
-                    continue;
-                }
-                kickedTo = wrapper.getServerInfo();
-                changed = true;
-                break;
-            }
-
-            if(!changed)
-                return;
-        }
+        RedirectServerWrapper targetServer = serverGroup.getRedirectServer(kickedFrom.getName());
+        if(targetServer == null) return;
 
         event.setCancelled(true);
-        event.setCancelServer(kickedTo);
+        event.setCancelServer(targetServer.getServerInfo());
 
         boolean hideMessage = false;
         for(String word : plugin.getConfig().getStringList("no-messages")){

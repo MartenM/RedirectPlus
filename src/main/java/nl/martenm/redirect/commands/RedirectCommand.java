@@ -38,19 +38,19 @@ public class RedirectCommand extends Command {
 
         else if(strings[0].equalsIgnoreCase("reload")){
             plugin.reload();
-            commandSender.sendMessage(new ComponentBuilder(ChatColor.GREEN + "  " + "Successfully reloaded the config file.").create());
+            commandSender.sendMessage(new ComponentBuilder(ChatColor.GREEN + "" + "Successfully reloaded the config file.").create());
             return;
         }
 
         else if(strings[0].equalsIgnoreCase("servers")){
             sendHeader(commandSender);
             commandSender.sendMessage(new ComponentBuilder(ChatColor.GREEN + "Online servers:").create());
-            for(RedirectServerWrapper info : plugin.getOnlineServer()){
+            for(RedirectServerWrapper info : plugin.getOnlineServers()){
                 commandSender.sendMessage(new ComponentBuilder("  " + ChatColor.GRAY + info.getServerInfo().getName()).create());
             }
             commandSender.sendMessage(new ComponentBuilder("").create());
             commandSender.sendMessage(new ComponentBuilder(ChatColor.RED + "Offline servers:").create());
-            for(RedirectServerWrapper info: plugin.getOfflineServer()){
+            for(RedirectServerWrapper info: plugin.getOfflineServers()){
                 commandSender.sendMessage(new ComponentBuilder("  " + ChatColor.GRAY + info.getServerInfo().getName()).create());
             }
             return;

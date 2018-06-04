@@ -2,6 +2,7 @@ package nl.martenm.redirect;
 
 import com.google.common.io.ByteStreams;
 import net.md_5.bungee.api.config.ServerInfo;
+import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
@@ -12,6 +13,7 @@ import nl.martenm.redirect.commands.RedirectCommand;
 import nl.martenm.redirect.listeners.PlayerKickListener;
 import nl.martenm.redirect.metrics.Metrics;
 import nl.martenm.redirect.objects.RedirectServerWrapper;
+import nl.martenm.redirect.objects.ServerGroup;
 
 import java.io.*;
 import java.util.*;
@@ -25,14 +27,16 @@ import java.util.stream.Collectors;
 public class RedirectPlus extends Plugin {
 
     private Configuration config;
-    private List<RedirectServerWrapper> servers;
+    private Map<String, RedirectServerWrapper> servers;
+    private List<ServerGroup> serverGroups;
     private ScheduledTask checker;
     private Metrics metrics = null;
 
     @Override
     public void onEnable() {
 
-        servers = new ArrayList<>();
+        servers = new HashMap<>();
+        serverGroups = new ArrayList<>();
 
         getLogger().info("Registering config...");
         registerConfig();
@@ -57,7 +61,6 @@ public class RedirectPlus extends Plugin {
         checker.cancel();
         getLogger().info("Disabling. Thanks for using the plugin!");
     }
-
 
     private void registerCommands(){
         PluginManager manager = getProxy().getPluginManager();
@@ -98,27 +101,64 @@ public class RedirectPlus extends Plugin {
      */
     private void setup(){
         if(servers == null){
-            servers = new ArrayList<>();
+            servers = new HashMap<>();
         } else servers.clear();
 
-        for(String key : config.getSection("servers").getKeys()) {
-            ServerInfo info = getProxy().getServerInfo(key.replace("%", "."));
-            if (info == null) {
-                getLogger().warning("Failed to find the server: " + key);
-                continue;
+        // Fetch server groups and servers connected to them.
+
+        // Fetch servers
+        for(String key : config.getSection("groups").getKeys()) {
+            ServerGroup serverGroup = new ServerGroup(
+                    this,
+                    key,
+                    config.getBoolean("groups." + key + ".bottom-kick"),
+                    config.getBoolean("groups." + key + ".spread"),
+                    config.getString("groups." + key + ".parent-group")
+            );
+
+            for(String servername : config.getStringList("groups." + key + ".servers")) {
+                ServerInfo info = getProxy().getServerInfo(servername.replace("%", "."));
+                if (info == null) {
+                    getLogger().warning("Failed to find the server: " + key + "(PATH: groups." + key + "servers > " + servername);
+                    continue;
+                }
+
+                // Found server, add it to the global server list to allow easy ping.
+                RedirectServerWrapper redirectServerWrapper = new RedirectServerWrapper(info, serverGroup, true);
+                if(!servers.containsKey(servername))
+                    servers.put(servername, redirectServerWrapper);
+
+                serverGroup.addServer(redirectServerWrapper);
             }
-            servers.add(new RedirectServerWrapper(info, config.getInt("servers." + key + ".priority")));
+
+            for(String servername : config.getStringList("groups." + key + ".connected")) {
+                ServerInfo info = getProxy().getServerInfo(servername.replace("%", "."));
+                if (info == null) {
+                    getLogger().warning("Failed to find the server: " + key + "(PATH: groups." + key + "servers > " + servername);
+                    continue;
+                }
+
+                // Found server, add it to the global server list to allow easy ping.
+                RedirectServerWrapper redirectServerWrapper = new RedirectServerWrapper(info, serverGroup, false);
+                servers.put(servername, redirectServerWrapper);
+
+                if(!servers.containsKey(servername))
+                    servers.put(servername, redirectServerWrapper);
+
+                serverGroup.addConnectedServer(redirectServerWrapper);
+            }
+
+            serverGroups.add(serverGroup);
         }
 
-        servers.sort((o1, o2) ->
-                (o1.getPriority() > o2.getPriority() ? 1 : 0));
 
+        // Start checker task to see if servers are online / offline
         if(checker != null){
             checker.cancel();
         }
 
         checker = getProxy().getScheduler().schedule(this, () -> {
-            for (RedirectServerWrapper server : servers) {
+            for (RedirectServerWrapper server : servers.values()) {
                 ServerInfo info = server.getServerInfo();
 
                 if (info == null) {
@@ -139,49 +179,52 @@ public class RedirectPlus extends Plugin {
     }
 
     /**
-     * Method used to get the RedirectServerWrapper for a online servers.
-     * @return A list of servers in a RedirectServerWrapper
-     */
-    public List<RedirectServerWrapper> getOnlineServer(){
-        return servers.stream().filter(RedirectServerWrapper::isOnline).collect(Collectors.toList());
-    }
-
-    /**
-     * Method used to get the RedirectServerWrapper for a offline servers.
-     * @return A list of servers in a RedirectServerWrapper
-     */
-    public List<RedirectServerWrapper> getOfflineServer(){
-        return servers.stream().filter(s -> !s.isOnline()).collect(Collectors.toList());
-    }
-
-    /**
-     * Method used to get the RedirectServerWrapper for all servers.
-     * @return A list of servers in a RedirectServerWrapper
-     */
-    public List<RedirectServerWrapper> getAllServers(){
-        return servers;
-    }
-
-    /**
      * Remote void to change the server status of a server.
      * @return true on success.
      */
     public boolean updateServer(String name, Boolean online){
-        for(RedirectServerWrapper wrapper : servers){
-            if(wrapper.getServerInfo().getName().equalsIgnoreCase(name)){
-                wrapper.setOnline(online);
-                return true;
-            }
-        }
-        return false;
+        if(servers.containsKey(name)) {
+            servers.get(name).setOnline(online);
+            return true;
+        } return false;
     }
 
     /**
      * Method used to reload the plugin.
      */
     public void reload(){
+        serverGroups.clear();
+        servers.clear();
+
         registerConfig();
         setup();
         getLogger().info("Reload completed.");
+    }
+
+    public ServerGroup getServerGroup(String name){
+        for(ServerGroup serverGroup : serverGroups) {
+            if(serverGroup.getName().equalsIgnoreCase(name)) {
+                return serverGroup;
+            }
+        }
+        return null;
+    }
+
+    public ServerGroup getUnkownServerGroup() {
+        return getServerGroup(getConfig().getString("unknown-group"));
+    }
+
+    public RedirectServerWrapper getServer(String name) {
+        if(servers.containsKey(name)) {
+            return servers.get(name);
+        } return null;
+    }
+
+    public List<RedirectServerWrapper> getOnlineServers(){
+        return new ArrayList<RedirectServerWrapper>(servers.values().stream().filter(server -> server.isOnline()).collect(Collectors.toList()));
+    }
+
+    public List<RedirectServerWrapper> getOfflineServers(){
+        return new ArrayList<RedirectServerWrapper>(servers.values().stream().filter(server -> !server.isOnline()).collect(Collectors.toList()));
     }
 }

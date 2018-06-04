@@ -29,18 +29,61 @@ detect-shutdown:
 no-messages:
   - "[Silent]"
 
-# Bottom kick lobby. When in one of the servers in this config, kick anyway.
-#                    Prevents people from being connected from lobby to lobby resulting in infinite loops.
-bottom-kick: true
+# unknown-group / server
+# This will redirect unknown servers to the group listed here:
+unknown-group: lobby
 
-# The servers to which a player can be kicked. Use the same name as in your BungeeCord config!
-# Additional note: If your server name contains a dot use a % instead of a space.
-#
-# FORMAT:
-#   bungeeServerName
-#     priority
-servers:
-  lobby1:
-    priority: 1
-  lobby2:
-    priority: 2
+# Server groups and their settings
+groups:
+  lobby:
+    # If kicked from this server group, no redirects will happen.
+    bottom-kick: true
+    # Spread redirect people over the servers.
+    spread: true
+    # Parent group - If none of the servers are available, the parent group will be used.
+    # Set to none if none. If the parent server group is needed the player will be kicked instead.
+    parent-group: none
+    servers:
+      - lobby1
+      - lobby2
+    # Servers that are connected to this group, but they won't be redirected to:
+    connected: {}
+  games:
+    bottom-kick: false
+    spread: true
+    parent-group: lobby
+    # These servers do not have lobbies them self so we use a parent group.
+    servers: {}
+    connected:
+      - survival
+      - pvp
+
+# EXAMPLE SETUP
+#groups:
+#  # The main lobby. If kicked from here they should not be redirected so we enable bottom-kick.
+#  # There are no connected servers here.
+#  main-lobby:
+#    bottom-kick: true
+#    spread: true
+#    parent-group: none
+#    servers:
+#      - lobby1
+#      - lobby2
+#      - lobby3
+#    connected: {}
+#  # This is the survival games group.
+#  # bottom-kick is false, since we want redirects from the connected servers.
+#  # The lobby servers are in the 'servers' list (so they will be redirected to) and the game servers are in the 'connected' list.
+#  survivalgames:
+#    bottom-kick: false
+#    spread: true
+#    parent-group: none
+#    servers:
+#      - sg-lobby-1
+#      - sg-lobby-2
+#    conntected:
+#      - sg-game-1
+#      - sg-game-2
+#      - sg-game-3
+#      - sg-game-4
+#      - sg-game-5

@@ -9,20 +9,22 @@ import net.md_5.bungee.api.config.ServerInfo;
 public class RedirectServerWrapper {
 
     private ServerInfo serverInfo;
-    private int priority;
     private boolean isOnline;
+    private ServerGroup serverGroup;
+    private boolean redirectable;
 
-    public RedirectServerWrapper(ServerInfo serverInfo, int priority){
+    public RedirectServerWrapper(ServerInfo serverInfo){
+        this(serverInfo, null, false);
+    }
+
+    public RedirectServerWrapper(ServerInfo serverInfo, ServerGroup serverGroup, boolean redirectable) {
         this.serverInfo = serverInfo;
-        this.priority = priority;
+        this.serverGroup = serverGroup;
+        this.redirectable = redirectable;
     }
 
     public ServerInfo getServerInfo() {
         return serverInfo;
-    }
-
-    public int getPriority() {
-        return priority;
     }
 
     public boolean isOnline() {
@@ -31,5 +33,9 @@ public class RedirectServerWrapper {
 
     public void setOnline(boolean online) {
         isOnline = online;
+    }
+
+    public ServerGroup getServerGroup() {
+        return serverGroup;
     }
 }
