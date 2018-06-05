@@ -12,6 +12,8 @@ import nl.martenm.redirect.RedirectPlus;
 import nl.martenm.redirect.objects.RedirectServerWrapper;
 import nl.martenm.redirect.objects.ServerGroup;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * @author MartenM
  * @since 5-1-2018.
@@ -72,10 +74,13 @@ public class PlayerKickListener implements Listener {
         }
 
         if(!hideMessage) {
-            for (String message : plugin.getConfig().getStringList("messages.redirected")) {
-                message = ChatColor.translateAlternateColorCodes('&', message.replace("%reason%", BaseComponent.toLegacyText(event.getKickReasonComponent())));
-                player.sendMessage(new ComponentBuilder(message).create());
-            }
+            // Schedule the for loop that sends messages so a delay can be added if needed.
+            plugin.getProxy().getScheduler().schedule(plugin, () -> {
+                for (String message : plugin.getConfig().getStringList("messages.redirected")) {
+                    message = ChatColor.translateAlternateColorCodes('&', message.replace("%reason%", BaseComponent.toLegacyText(event.getKickReasonComponent())));
+                    player.sendMessage(new ComponentBuilder(message).create());
+                }
+            }, plugin.getConfig().getInt("delay"), TimeUnit.SECONDS);
         }
     }
 }

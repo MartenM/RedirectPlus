@@ -10,8 +10,13 @@ messages:
 # Players won't be connected to offline servers.
 check: 30
 
+# The delay that is given to the redirect message.
+# When you have a lot of messages when a player joins a certain server this can help to make sure that the redirect messages shows as 'newest'.
+# The delay is in seconds.
+delay: 0
+
 # Blacklist. When a kick message contains this word they will NOT get redirected.
-#            This will result in the player seeing the kick screen.
+#   This will result in the player seeing the kick screen.
 blacklist:
   - "ban"
 
