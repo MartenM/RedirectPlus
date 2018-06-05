@@ -38,4 +38,8 @@ public class RedirectServerWrapper {
     public ServerGroup getServerGroup() {
         return serverGroup;
     }
+
+    public boolean isRedirectable() {
+        return redirectable;
+    }
 }

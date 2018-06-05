@@ -227,4 +227,12 @@ public class RedirectPlus extends Plugin {
     public List<RedirectServerWrapper> getOfflineServers(){
         return new ArrayList<RedirectServerWrapper>(servers.values().stream().filter(server -> !server.isOnline()).collect(Collectors.toList()));
     }
+
+    public List<RedirectServerWrapper> getRedirectServers() {
+        return new ArrayList<>(servers.values());
+    }
+
+    public List<ServerGroup> getServerGroups() {
+        return serverGroups;
+    }
 }
