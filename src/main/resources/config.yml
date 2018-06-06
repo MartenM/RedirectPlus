@@ -63,6 +63,17 @@ groups:
       - survival
       - pvp
 
+# Log settings, this will show your messages in console so you know what's going on.
+log:
+  # If set to true the plugin will log redirects attempts that are canceled due to blacklisted words.
+  blacklist: true
+  # If set to true the plugin will log redirects that fail because no server was found.
+  redirect-failed: true
+  # If set to true the plugin will log players that do not get redirected due to the bottom-kick setting enabled.
+  bottom-kick: false
+  # If set to true the plugin will log successful redirect attempts.
+  redirected: true
+
 # EXAMPLE SETUP
 #groups:
 #  # The main lobby. If kicked from here they should not be redirected so we enable bottom-kick.

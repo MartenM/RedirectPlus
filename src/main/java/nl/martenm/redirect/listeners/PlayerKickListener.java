@@ -34,8 +34,11 @@ public class PlayerKickListener implements Listener {
 
         // Blacklist
         for(String word : plugin.getConfig().getStringList("blacklist")) {
-            if (BaseComponent.toLegacyText(event.getKickReasonComponent()).contains(word))
+            if (BaseComponent.toLegacyText(event.getKickReasonComponent()).contains(word)) {
+                if(plugin.getConfig().getBoolean("log.blacklist"))
+                    plugin.getLogger().info("Cancelled the redirect of " + player.getName() + " [Blacklist: " + word + "]");
                 return;
+            }
         }
 
         // Detect shutdown.
@@ -56,11 +59,17 @@ public class PlayerKickListener implements Listener {
         } else serverGroup = plugin.getUnkownServerGroup();
 
         if(serverGroup.isBottomKick()) {
+            if(plugin.getConfig().getBoolean("log.bottom-kick"))
+                plugin.getLogger().info("Cancelled the redirect of " + player.getName() + " [Bottom-kick]");
             return;
         }
 
         RedirectServerWrapper targetServer = serverGroup.getRedirectServer(kickedFrom.getName());
-        if(targetServer == null) return;
+        if(targetServer == null) {
+            if(plugin.getConfig().getBoolean("log.redirect-failed"))
+                plugin.getLogger().info("Redirect of " + player.getName() + " failed. [No server found]");
+            return;
+        }
 
         event.setCancelled(true);
         event.setCancelServer(targetServer.getServerInfo());
@@ -82,5 +91,8 @@ public class PlayerKickListener implements Listener {
                 }
             }, plugin.getConfig().getInt("delay"), TimeUnit.SECONDS);
         }
+
+        if(plugin.getConfig().getBoolean("log.redirected"))
+            plugin.getLogger().info("Redirected " + player.getName() + " from " + event.getKickedFrom().getName() + " to " + targetServer.getServerInfo().getName());
     }
 }
