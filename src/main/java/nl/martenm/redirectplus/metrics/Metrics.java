@@ -1,4 +1,4 @@
-package nl.martenm.redirect.metrics;
+package nl.martenm.redirectplus.metrics;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;

@@ -11,7 +11,7 @@ messages:
 check: 30
 
 # The delay that is given to the redirect message.
-# When you have a lot of messages when a player joins a certain server this can help to make sure that the redirect messages shows as 'newest'.
+# When you have a lot of messages when a player joins a certain server this can help to make sure that the redirectplus messages shows as 'newest'.
 # The delay is in seconds.
 delay: 0
 
@@ -21,7 +21,7 @@ blacklist:
   - "ban"
 
 # Detect shutdown in server kick messages
-#   This can be faster for when you want to shutdowns servers and using RedirectPlus to redirect those people.
+#   This can be faster for when you want to shutdowns servers and using RedirectPlus to redirectplus those people.
 detect-shutdown:
   enabled: true
   messages:
@@ -43,7 +43,7 @@ groups:
   lobby:
     # If kicked from this server group, no redirects will happen.
     bottom-kick: true
-    # Spread redirect people over the servers.
+    # Spread redirected people over the servers.
     spread: true
     # Parent group - If none of the servers are available, the parent group will be used.
     # Set to none if none. If the parent server group is needed the player will be kicked instead.
@@ -97,7 +97,7 @@ log:
 #    servers:
 #      - sg-lobby-1
 #      - sg-lobby-2
-#    conntected:
+#    connected:
 #      - sg-game-1
 #      - sg-game-2
 #      - sg-game-3

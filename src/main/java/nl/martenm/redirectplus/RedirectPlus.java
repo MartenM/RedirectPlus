@@ -1,19 +1,18 @@
-package nl.martenm.redirect;
+package nl.martenm.redirectplus;
 
 import com.google.common.io.ByteStreams;
 import net.md_5.bungee.api.config.ServerInfo;
-import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
-import nl.martenm.redirect.commands.RedirectCommand;
-import nl.martenm.redirect.listeners.PlayerKickListener;
-import nl.martenm.redirect.metrics.Metrics;
-import nl.martenm.redirect.objects.RedirectServerWrapper;
-import nl.martenm.redirect.objects.ServerGroup;
+import nl.martenm.redirectplus.commands.RedirectCommand;
+import nl.martenm.redirectplus.listeners.PlayerKickListener;
+import nl.martenm.redirectplus.metrics.Metrics;
+import nl.martenm.redirectplus.objects.RedirectServerWrapper;
+import nl.martenm.redirectplus.objects.ServerGroup;
 
 import java.io.*;
 import java.util.*;

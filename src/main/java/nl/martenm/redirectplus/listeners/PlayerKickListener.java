@@ -1,4 +1,4 @@
-package nl.martenm.redirect.listeners;
+package nl.martenm.redirectplus.listeners;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -8,9 +8,9 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ServerKickEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
-import nl.martenm.redirect.RedirectPlus;
-import nl.martenm.redirect.objects.RedirectServerWrapper;
-import nl.martenm.redirect.objects.ServerGroup;
+import nl.martenm.redirectplus.RedirectPlus;
+import nl.martenm.redirectplus.objects.RedirectServerWrapper;
+import nl.martenm.redirectplus.objects.ServerGroup;
 
 import java.util.concurrent.TimeUnit;
 
@@ -36,7 +36,7 @@ public class PlayerKickListener implements Listener {
         for(String word : plugin.getConfig().getStringList("blacklist")) {
             if (BaseComponent.toLegacyText(event.getKickReasonComponent()).contains(word)) {
                 if(plugin.getConfig().getBoolean("log.blacklist"))
-                    plugin.getLogger().info("Cancelled the redirect of " + player.getName() + " [Blacklist: " + word + "]");
+                    plugin.getLogger().info("Cancelled the redirectplus of " + player.getName() + " [Blacklist: " + word + "]");
                 return;
             }
         }
@@ -60,13 +60,13 @@ public class PlayerKickListener implements Listener {
 
         if(serverGroup.isBottomKick()) {
             if(plugin.getConfig().getBoolean("log.bottom-kick"))
-                plugin.getLogger().info("Cancelled the redirect of " + player.getName() + " [Bottom-kick]");
+                plugin.getLogger().info("Cancelled the redirectplus of " + player.getName() + " [Bottom-kick]");
             return;
         }
 
         RedirectServerWrapper targetServer = serverGroup.getRedirectServer(kickedFrom.getName());
         if(targetServer == null) {
-            if(plugin.getConfig().getBoolean("log.redirect-failed"))
+            if(plugin.getConfig().getBoolean("log.redirectplus-failed"))
                 plugin.getLogger().info("Redirect of " + player.getName() + " failed. [No server found]");
             return;
         }

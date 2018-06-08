@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>nl.martenm</groupId>
-    <artifactId>redirect</artifactId>
-    <version>2.3.0</version>
+    <artifactId>RedirectPlus</artifactId>
+    <version>2.3.1</version>
 
     <repositories>
         <repository>

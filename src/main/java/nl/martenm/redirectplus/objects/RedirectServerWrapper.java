@@ -1,4 +1,4 @@
-package nl.martenm.redirect.objects;
+package nl.martenm.redirectplus.objects;
 
 import net.md_5.bungee.api.config.ServerInfo;
 

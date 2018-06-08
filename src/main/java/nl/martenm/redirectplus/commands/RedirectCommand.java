@@ -1,12 +1,12 @@
-package nl.martenm.redirect.commands;
+package nl.martenm.redirectplus.commands;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.plugin.Command;
-import nl.martenm.redirect.RedirectPlus;
-import nl.martenm.redirect.objects.RedirectServerWrapper;
-import nl.martenm.redirect.objects.ServerGroup;
+import nl.martenm.redirectplus.RedirectPlus;
+import nl.martenm.redirectplus.objects.RedirectServerWrapper;
+import nl.martenm.redirectplus.objects.ServerGroup;
 
 /**
  * @author MartenM
@@ -17,7 +17,7 @@ public class RedirectCommand extends Command {
     private final RedirectPlus plugin;
 
     public RedirectCommand(RedirectPlus plugin) {
-        super("redirect", "redirectplus.admin", "rd");
+        super("redirectplus", "redirectplus.admin", "rd");
         this.plugin = plugin;
     }
 

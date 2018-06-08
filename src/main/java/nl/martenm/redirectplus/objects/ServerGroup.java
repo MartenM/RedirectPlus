@@ -1,6 +1,6 @@
-package nl.martenm.redirect.objects;
+package nl.martenm.redirectplus.objects;
 
-import nl.martenm.redirect.RedirectPlus;
+import nl.martenm.redirectplus.RedirectPlus;
 
 import java.util.ArrayList;
 import java.util.List;
