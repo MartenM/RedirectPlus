@@ -5,6 +5,14 @@ messages:
     - "&cAn kick occurred in your connection. &cReason:&r %reason%"
     - "&cYou have been send back to the main lobby."
     - "&f"
+  unable-redirect-alias:
+    - "&f"
+    - "&cUnable to send you. All servers in that category are unavailable."
+    - "&f"
+  unable-redirect-alias-same-category:
+    - "&f"
+    - "&cUnable to send you to another server in this category."
+    - "&f"
 
 # The amount of time between checking if a server is online.
 # Players won't be connected to offline servers.
@@ -53,6 +61,8 @@ groups:
       - lobby2
     # Servers that are connected to this group, but they won't be redirected to:
     connected: {}
+    # Aliases can be used to redirect people to the server group when they use a certain command (Eg: lobby, hub, survival, towny, etc)
+    aliases: {}
   games:
     bottom-kick: false
     spread: true
@@ -62,6 +72,9 @@ groups:
     connected:
       - survival
       - pvp
+    # Aliases can be used to redirect people to the server group when they use a certain command (Eg: lobby, hub, survival, towny, etc)
+    aliases:
+      - games
 
 # Log settings, this will show your messages in console so you know what's going on.
 log:
@@ -87,6 +100,10 @@ log:
 #      - lobby2
 #      - lobby3
 #    connected: {}
+#    # Aliases can be used to redirect people to the server group when they use a certain command (Eg: lobby, hub, survival, towny, etc)
+#    aliases:
+#      - lobbies
+#      - lobby
 #  # This is the survival games group.
 #  # bottom-kick is false, since we want redirects from the connected servers.
 #  # The lobby servers are in the 'servers' list (so they will be redirected to) and the game servers are in the 'connected' list.
@@ -103,3 +120,7 @@ log:
 #      - sg-game-3
 #      - sg-game-4
 #      - sg-game-5
+#    # Aliases can be used to redirect people to the server group when they use a certain command (Eg: lobby, hub, survival, towny, etc)
+#    aliases:
+#      - survivalgames
+#      - sg

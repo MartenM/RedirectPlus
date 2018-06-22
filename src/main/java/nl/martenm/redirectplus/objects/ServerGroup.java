@@ -21,8 +21,9 @@ public class ServerGroup {
     private boolean bottomKick;
     private boolean spread;
     private int spreadCounter = 0;
+    private String[] aliases;
 
-    public ServerGroup(RedirectPlus redirectPlus, String name, boolean bottomKick, boolean spread, String parent) {
+    public ServerGroup(RedirectPlus redirectPlus, String name, boolean bottomKick, boolean spread, String parent, String[] aliases) {
         this.redirectPlus = redirectPlus;
         this.name = name;
         this.bottomKick = bottomKick;
@@ -33,6 +34,11 @@ public class ServerGroup {
 
         this.servers = new ArrayList<>();
         this.connected = new ArrayList<>();
+        this.aliases = aliases;
+    }
+
+    public ServerGroup(RedirectPlus redirectPlus, String name, boolean bottomKick, boolean spread, String parent, List<String> aliases) {
+        this(redirectPlus, name, bottomKick, spread, parent, aliases.toArray(new String[aliases.size()]));
     }
 
     public String getName() {
@@ -75,7 +81,7 @@ public class ServerGroup {
         return this.redirectPlus.getServerGroup(parent);
     }
 
-    public RedirectServerWrapper getRedirectServer(String oldServer) {
+    public RedirectServerWrapper getRedirectServer(String oldServer, boolean useParent) {
         RedirectServerWrapper redirectServer = null;
 
         // Get online servers
@@ -89,7 +95,7 @@ public class ServerGroup {
         if(onlineServers.size() == 0) {
             // There are no online servers. Get the parent group or return null.
             ServerGroup parent = getParent();
-            if(parent == null) return null;
+            if(parent == null || !useParent) return null;
 
             return parent.getRedirectServer(oldServer);
         }
@@ -104,5 +110,17 @@ public class ServerGroup {
         } else redirectServer = onlineServers.get(0);
 
         return redirectServer;
+    }
+
+    public RedirectServerWrapper getRedirectServer(String oldServer) {
+        return getRedirectServer(oldServer, true);
+    }
+
+    public String[] getAliases() {
+        return aliases;
+    }
+
+    public int getAvailableServersSize() {
+        return (int) servers.stream().filter(server -> server.isOnline()).count();
     }
 }

@@ -9,13 +9,17 @@ import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 import nl.martenm.redirectplus.commands.RedirectCommand;
+import nl.martenm.redirectplus.listeners.ChatEventListener;
 import nl.martenm.redirectplus.listeners.PlayerKickListener;
 import nl.martenm.redirectplus.metrics.Metrics;
 import nl.martenm.redirectplus.objects.RedirectServerWrapper;
 import nl.martenm.redirectplus.objects.ServerGroup;
 
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -92,6 +96,7 @@ public class RedirectPlus extends Plugin {
 
     private void registerEvents(){
         getProxy().getPluginManager().registerListener(this, new PlayerKickListener(this));
+        getProxy().getPluginManager().registerListener(this, new ChatEventListener(this));
     }
 
     /**
@@ -112,7 +117,8 @@ public class RedirectPlus extends Plugin {
                     key,
                     config.getBoolean("groups." + key + ".bottom-kick"),
                     config.getBoolean("groups." + key + ".spread"),
-                    config.getString("groups." + key + ".parent-group")
+                    config.getString("groups." + key + ".parent-group"),
+                    config.getStringList("groups." + key + ".aliases")
             );
 
             for(String servername : config.getStringList("groups." + key + ".servers")) {
@@ -220,11 +226,11 @@ public class RedirectPlus extends Plugin {
     }
 
     public List<RedirectServerWrapper> getOnlineServers(){
-        return new ArrayList<RedirectServerWrapper>(servers.values().stream().filter(server -> server.isOnline()).collect(Collectors.toList()));
+        return new ArrayList<>(servers.values().stream().filter(server -> server.isOnline()).collect(Collectors.toList()));
     }
 
     public List<RedirectServerWrapper> getOfflineServers(){
-        return new ArrayList<RedirectServerWrapper>(servers.values().stream().filter(server -> !server.isOnline()).collect(Collectors.toList()));
+        return new ArrayList<>(servers.values().stream().filter(server -> !server.isOnline()).collect(Collectors.toList()));
     }
 
     public List<RedirectServerWrapper> getRedirectServers() {
