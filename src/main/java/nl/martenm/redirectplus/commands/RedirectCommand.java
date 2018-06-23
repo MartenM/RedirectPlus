@@ -34,6 +34,7 @@ public class RedirectCommand extends Command {
             sendHeader(commandSender);
             commandSender.sendMessage(new ComponentBuilder(ChatColor.GREEN + "  " + "/rd servers").create());
             commandSender.sendMessage(new ComponentBuilder(ChatColor.GREEN + "  " + "/rd groups").create());
+            commandSender.sendMessage(new ComponentBuilder(ChatColor.GREEN + "  " + "/rd refresh").create());
             commandSender.sendMessage(new ComponentBuilder(ChatColor.GREEN + "  " + "/rd reload").create());
             return;
         }
@@ -41,6 +42,12 @@ public class RedirectCommand extends Command {
         else if(strings[0].equalsIgnoreCase("reload")){
             plugin.reload();
             commandSender.sendMessage(new ComponentBuilder(ChatColor.GREEN + "" + "Successfully reloaded the config file.").create());
+            return;
+        }
+
+        else if(strings[0].equalsIgnoreCase("refresh")){
+            plugin.updateServers();
+            commandSender.sendMessage(new ComponentBuilder(ChatColor.YELLOW + "" + "Refreshing server info right now. Pleas note that this may take some time (1-10 seconds).").create());
             return;
         }
 

@@ -163,20 +163,24 @@ public class RedirectPlus extends Plugin {
         }
 
         checker = getProxy().getScheduler().schedule(this, () -> {
-            for (RedirectServerWrapper server : servers.values()) {
-                ServerInfo info = server.getServerInfo();
-
-                if (info == null) {
-                    continue;
-                }
-
-                info.ping((serverPing, throwable) -> {
-                    getProxy().getScheduler().schedule(this, () -> {
-                        server.setOnline(throwable == null);
-                    }, 1, TimeUnit.MILLISECONDS);
-                });
-            }
+            updateServers();
         }, 0, config.getInt("check"), TimeUnit.SECONDS);
+    }
+
+    public void updateServers() {
+        for (RedirectServerWrapper server : servers.values()) {
+            ServerInfo info = server.getServerInfo();
+
+            if (info == null) {
+                continue;
+            }
+
+            info.ping((serverPing, throwable) -> {
+                getProxy().getScheduler().schedule(this, () -> {
+                    server.setOnline(throwable == null);
+                }, 1, TimeUnit.MILLISECONDS);
+            });
+        }
     }
 
     public Configuration getConfig() {
