@@ -177,7 +177,14 @@ public class RedirectPlus extends Plugin {
 
             info.ping((serverPing, throwable) -> {
                 getProxy().getScheduler().schedule(this, () -> {
-                    server.setOnline(throwable == null);
+                    if(throwable == null) {
+                        server.setOnline(true);
+                        server.setOnlinePlayersCount(serverPing.getPlayers().getOnline());
+                    } else {
+                        server.setOnline(false);
+                        server.setOnlinePlayersCount(0);
+                    }
+
                 }, 1, TimeUnit.MILLISECONDS);
             });
         }

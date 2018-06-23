@@ -59,6 +59,8 @@ public class RedirectCommand extends Command {
                 commandSender.sendMessage(new ComponentBuilder(ChatColor.GRAY + "  Status: " + (server.isOnline() ? ChatColor.GREEN + "Online" : ChatColor.RED + "Offline")).create());
                 commandSender.sendMessage(new ComponentBuilder(ChatColor.GRAY + "  Group: " + ChatColor.YELLOW + server.getServerGroup().getName()).create());
                 commandSender.sendMessage(new ComponentBuilder(ChatColor.GRAY + "  Receives Redirects: " + (server.isRedirectable() ? ChatColor.GREEN + "Yes" : ChatColor.YELLOW + "No")).create());
+                commandSender.sendMessage(new ComponentBuilder(ChatColor.GRAY + "  Players (aprox): " + (server.getOnlinePlayersCount() == 0 ? ChatColor.RED.toString() + server.getOnlinePlayersCount() : ChatColor.YELLOW.toString() + server.getOnlinePlayersCount())).create());
+
                 commandSender.sendMessage(new ComponentBuilder(ChatColor.GRAY + "  Moth: " + ChatColor.GRAY + server.getServerInfo().getMotd()).create());
                 commandSender.sendMessage(new ComponentBuilder(ChatColor.GRAY + " ").create());
             }
@@ -72,6 +74,13 @@ public class RedirectCommand extends Command {
                 commandSender.sendMessage(new ComponentBuilder(ChatColor.GRAY + "  Bottom-kick: " + (serverGroup.isBottomKick() ? ChatColor.GREEN + "Yes" : ChatColor.YELLOW + "No")).create());
                 commandSender.sendMessage(new ComponentBuilder(ChatColor.GRAY + "  Spread Players: " + (serverGroup.isSpread() ? ChatColor.GREEN + "Yes" : ChatColor.YELLOW + "No")).create());
                 commandSender.sendMessage(new ComponentBuilder(ChatColor.GRAY + "  Parent Group: " + (serverGroup.getParent() != null ? ChatColor.GREEN + serverGroup.getParent().getName() : ChatColor.YELLOW + "None")).create());
+
+                int onlinePlayers = serverGroup.getServers().stream()
+                        .filter(server -> server.isOnline())
+                        .mapToInt(server -> server.getOnlinePlayersCount())
+                        .sum();
+                commandSender.sendMessage(new ComponentBuilder(ChatColor.GRAY + "  Players (aprox): " + (onlinePlayers == 0 ? ChatColor.RED.toString() + onlinePlayers : ChatColor.YELLOW.toString() + onlinePlayers)).create());
+
 
                 commandSender.sendMessage(new ComponentBuilder(ChatColor.GRAY + "  Servers: ").create());
                 for(RedirectServerWrapper server : serverGroup.getServers()) {

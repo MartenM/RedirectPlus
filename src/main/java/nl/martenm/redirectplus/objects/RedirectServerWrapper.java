@@ -12,6 +12,7 @@ public class RedirectServerWrapper {
     private boolean isOnline;
     private ServerGroup serverGroup;
     private boolean redirectable;
+    private int onlinePlayersCount;
 
     public RedirectServerWrapper(ServerInfo serverInfo){
         this(serverInfo, null, false);
@@ -41,5 +42,13 @@ public class RedirectServerWrapper {
 
     public boolean isRedirectable() {
         return redirectable;
+    }
+
+    public int getOnlinePlayersCount() {
+        return onlinePlayersCount;
+    }
+
+    public void setOnlinePlayersCount(int onlinePlayersCount) {
+        this.onlinePlayersCount = onlinePlayersCount;
     }
 }
