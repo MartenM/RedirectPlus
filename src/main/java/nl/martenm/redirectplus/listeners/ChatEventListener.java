@@ -8,6 +8,7 @@ import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import nl.martenm.redirectplus.RedirectPlus;
+import nl.martenm.redirectplus.api.events.ProxiedPlayerGroupAliasExecuted;
 import nl.martenm.redirectplus.objects.RedirectServerWrapper;
 import nl.martenm.redirectplus.objects.ServerGroup;
 
@@ -78,6 +79,15 @@ public class ChatEventListener implements Listener {
             event.setCancelled(true);
             return;
         }
+
+        // Redirect API
+        ProxiedPlayerGroupAliasExecuted apiEvent = new ProxiedPlayerGroupAliasExecuted(proxiedPlayer, args[0], event.getMessage().substring(1), currentServerGroup, server);
+        plugin.getProxy().getPluginManager().callEvent(apiEvent);
+
+        if(apiEvent.isCancelled()) {
+            return;
+        }
+        //
 
         proxiedPlayer.connect(server.getServerInfo());
         event.setCancelled(true);

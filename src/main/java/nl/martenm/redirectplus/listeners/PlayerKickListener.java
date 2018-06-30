@@ -9,6 +9,7 @@ import net.md_5.bungee.api.event.ServerKickEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import nl.martenm.redirectplus.RedirectPlus;
+import nl.martenm.redirectplus.api.events.ProxiedPlayerRedirectEvent;
 import nl.martenm.redirectplus.objects.RedirectServerWrapper;
 import nl.martenm.redirectplus.objects.ServerGroup;
 
@@ -70,6 +71,15 @@ public class PlayerKickListener implements Listener {
                 plugin.getLogger().info("Redirect of " + player.getName() + " failed. [No server found]");
             return;
         }
+
+        // Redirect API
+        ProxiedPlayerRedirectEvent apiEvent = new ProxiedPlayerRedirectEvent(event.getPlayer(), event.getKickedFrom(), targetServer.getServerInfo(), event.getKickReasonComponent().toString());
+        plugin.getProxy().getPluginManager().callEvent(apiEvent);
+
+        if(apiEvent.isCancelled()) {
+            return;
+        }
+        //
 
         event.setCancelled(true);
         event.setCancelServer(targetServer.getServerInfo());

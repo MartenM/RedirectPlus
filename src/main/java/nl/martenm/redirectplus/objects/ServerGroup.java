@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * A <strong>ServerGroup</strong> represents a list/group of servers. This includes both servers that can be redirected to and servers that cannot be redirected to.
+ * There are also various methods for grabbing a server and group specific tasks.
  * @author MartenM
  * @since 4-6-2018.
  */
@@ -41,18 +43,34 @@ public class ServerGroup {
         this(redirectPlus, name, bottomKick, spread, parent, aliases.toArray(new String[aliases.size()]));
     }
 
+    /**
+     * Get the name of the ServerGroup.
+     * @return the name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Get all the servers that can be redirected to.
+     * @return
+     */
     public List<RedirectServerWrapper> getServers() {
         return servers;
     }
 
+    /**
+     * Get all the servers that are connected to this group, but cannot be redirected to.
+     * @return
+     */
     public List<RedirectServerWrapper> getConnected() {
         return connected;
     }
 
+    /**
+     * Get whether bottom-kick is enabled for this group of servers.
+     * @return
+     */
     public boolean isBottomKick() {
         return bottomKick;
     }
@@ -61,6 +79,10 @@ public class ServerGroup {
         this.bottomKick = bottomKick;
     }
 
+    /**
+     * Check whether this ServerGroup spreads the players across servers.
+     * @return
+     */
     public boolean isSpread() {
         return spread;
     }
@@ -69,18 +91,36 @@ public class ServerGroup {
         this.spread = spread;
     }
 
+    /**
+     * Add a redirectable server to the ServerGroup.
+     * @param server
+     */
     public void addServer(RedirectServerWrapper server) {
         this.servers.add(server);
     }
 
+    /**
+     * Add a server that is connected to this group.
+     * @param server
+     */
     public void addConnectedServer(RedirectServerWrapper server) {
         this.connected.add(server);
     }
 
+    /**
+     * Get the ServerGroup parent.
+     * @return
+     */
     public ServerGroup getParent() {
         return this.redirectPlus.getServerGroup(parent);
     }
 
+    /**
+     * Get a new server based on the old server and parent group.
+     * @param oldServer The old server the player has been kicked from.
+     * @param useParent Whether we are allowed to select from the parent group.
+     * @return The server to be redirected to. Null if none.
+     */
     public RedirectServerWrapper getRedirectServer(String oldServer, boolean useParent) {
         RedirectServerWrapper redirectServer = null;
 
@@ -112,6 +152,11 @@ public class ServerGroup {
         return redirectServer;
     }
 
+    /**
+     * Get a new server based on the old server and parent group.
+     * @param oldServer The old server the player has been kicked from.
+     * @return
+     */
     public RedirectServerWrapper getRedirectServer(String oldServer) {
         return getRedirectServer(oldServer, true);
     }

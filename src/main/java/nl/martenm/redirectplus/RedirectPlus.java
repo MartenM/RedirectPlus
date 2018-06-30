@@ -8,6 +8,7 @@ import net.md_5.bungee.api.scheduler.ScheduledTask;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
+import nl.martenm.redirectplus.api.events.RedirectServerStatusChangeEvent;
 import nl.martenm.redirectplus.commands.RedirectCommand;
 import nl.martenm.redirectplus.listeners.ChatEventListener;
 import nl.martenm.redirectplus.listeners.PlayerKickListener;
@@ -177,6 +178,10 @@ public class RedirectPlus extends Plugin {
 
             info.ping((serverPing, throwable) -> {
                 getProxy().getScheduler().schedule(this, () -> {
+
+                    // Get old data and populate the event.
+                    RedirectServerStatusChangeEvent apiEvent = new RedirectServerStatusChangeEvent(server, server.getOnlinePlayersCount(), server.isOnline());
+
                     if(throwable == null) {
                         server.setOnline(true);
                         server.setOnlinePlayersCount(serverPing.getPlayers().getOnline());
@@ -184,6 +189,9 @@ public class RedirectPlus extends Plugin {
                         server.setOnline(false);
                         server.setOnlinePlayersCount(0);
                     }
+
+                    // Call the event
+                    getProxy().getPluginManager().callEvent(apiEvent);
 
                 }, 1, TimeUnit.MILLISECONDS);
             });

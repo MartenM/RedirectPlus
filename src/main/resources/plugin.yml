@@ -1,7 +1,7 @@
 name: RedirectPlus
 main: nl.martenm.redirectplus.RedirectPlus
-version: 2.4.1
+version: 2.5.0
 author: MartenM
 commands:
   redirect:
-    description: "The main command for the redirectplus plugin."
+    description: "The main command for the RedirectPlus plugin."
