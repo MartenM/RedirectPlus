@@ -46,6 +46,18 @@ no-messages:
 # This will redirect unknown servers to the group listed here:
 unknown-group: lobby
 
+# Specify defaults here. You can overwrite these settings by adding them to groups them self.
+global:
+  # Spread modes:
+  #   PROGRESSIVE : Fill the server to the progressive-minimal amount, after that fill the next one, giving nicely populated lobbies. Uses LOWEST when the minimal is reached on all servers.
+  #   CYCLE       : Cycle to the server to spread the load as much as possible. This can result in players being in a server on their own.
+  #   LOWEST      : Send the player to the server with the lowest amount of players online.
+  #   HIGHEST     : Send the players to the server with the highest amount of players. (Not adviced!)
+  spread-mode: PROGRESSIVE
+
+  # The minimal amount of players that are on a server before the next server gets selected.
+  progressive-minimal: 20
+
 # Server groups and their settings
 groups:
   lobby:
@@ -53,6 +65,10 @@ groups:
     bottom-kick: true
     # Spread redirected people over the servers.
     spread: true
+    # Spread mode, if spread is enabled, use the following spread mode (will overwrite global if used).
+    spread-mode: PROGRESSIVE
+    # The minimal amount of players that are on a server before the next server gets selected. (only used for PROGRESSIVE spread)
+    progressive-minimal: 20
     # Parent group - If none of the servers are available, the parent group will be used.
     # Set to none if none. If the parent server group is needed the player will be kicked instead.
     parent-group: none

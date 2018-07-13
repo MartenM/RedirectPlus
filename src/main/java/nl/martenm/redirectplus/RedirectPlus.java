@@ -10,6 +10,7 @@ import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 import nl.martenm.redirectplus.api.events.RedirectServerStatusChangeEvent;
 import nl.martenm.redirectplus.commands.RedirectCommand;
+import nl.martenm.redirectplus.enums.SpreadMode;
 import nl.martenm.redirectplus.listeners.ChatEventListener;
 import nl.martenm.redirectplus.listeners.PlayerKickListener;
 import nl.martenm.redirectplus.metrics.Metrics;
@@ -113,13 +114,26 @@ public class RedirectPlus extends Plugin {
 
         // Fetch servers
         for(String key : config.getSection("groups").getKeys()) {
+
+            SpreadMode spreadMode = null;
+            int minimalProgressive = 0;
+
+            if(getConfig().get("groups." + key + ".spread-mode") != null) {
+                spreadMode = SpreadMode.valueOf(getConfig().getString("groups." + key + ".spread-mode"));
+            }
+            if(getConfig().get("groups." + key + ".progressive-minimal") != null) {
+                minimalProgressive = getConfig().getInt("groups." + key + ".progressive-minimal");
+            }
+
             ServerGroup serverGroup = new ServerGroup(
                     this,
                     key,
                     config.getBoolean("groups." + key + ".bottom-kick"),
                     config.getBoolean("groups." + key + ".spread"),
                     config.getString("groups." + key + ".parent-group"),
-                    config.getStringList("groups." + key + ".aliases")
+                    config.getStringList("groups." + key + ".aliases"),
+                    spreadMode,
+                    minimalProgressive
             );
 
             for(String servername : config.getStringList("groups." + key + ".servers")) {
