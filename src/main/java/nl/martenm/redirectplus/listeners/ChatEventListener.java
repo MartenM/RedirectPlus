@@ -69,7 +69,7 @@ public class ChatEventListener implements Listener {
             return;
         }
 
-        RedirectServerWrapper server = serverGroup.getRedirectServer(proxiedPlayer.getServer().getInfo().getName(), false);
+        RedirectServerWrapper server = serverGroup.getRedirectServer(proxiedPlayer.getServer().getInfo().getName(), false, serverGroup.getSpreadMode());
 
         if(server == null) {
             for (String message : plugin.getConfig().getStringList("messages.unable-redirect-alias")) {

@@ -179,8 +179,8 @@ public class ServerGroup {
             }
             else if(spreadMode == SpreadMode.PROGRESSIVE) {
                 onlineServers.sort((o1, o2) -> {
-                    return o1.getOnlinePlayersCount() < o2.getOnlinePlayersCount() ? -1
-                            : o1.getOnlinePlayersCount() > o2.getOnlinePlayersCount() ? 1
+                    return o1.getOnlinePlayersCount() > o2.getOnlinePlayersCount() ? -1
+                            : o1.getOnlinePlayersCount() < o2.getOnlinePlayersCount() ? 1
                             : 0;
                 });
 
