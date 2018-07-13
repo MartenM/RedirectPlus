@@ -62,4 +62,18 @@ public class RedirectServerWrapper {
     public void setOnlinePlayersCount(int onlinePlayersCount) {
         this.onlinePlayersCount = onlinePlayersCount;
     }
+
+    /**
+     * Adds an proxied player to the player count so a better approximation is made.
+     */
+    public void addProxiedPlayer() {
+        onlinePlayersCount++;
+    }
+
+    /**
+     * Remove an proxied player from the player count so a better approximation is made.
+     */
+    public void removeProxiedPlayer() {
+        onlinePlayersCount--;
+    }
 }

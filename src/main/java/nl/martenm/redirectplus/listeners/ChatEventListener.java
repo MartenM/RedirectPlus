@@ -90,6 +90,8 @@ public class ChatEventListener implements Listener {
         //
 
         proxiedPlayer.connect(server.getServerInfo());
+        server.addProxiedPlayer();
+        plugin.getServer(currentServer.getName()).removeProxiedPlayer();
         event.setCancelled(true);
     }
 
