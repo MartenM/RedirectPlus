@@ -105,6 +105,7 @@ public class PlayerKickListener implements Listener {
         if(plugin.getConfig().getBoolean("log.redirected"))
             plugin.getLogger().info("Redirected " + player.getName() + " from " + event.getKickedFrom().getName() + " to " + targetServer.getServerInfo().getName());
         targetServer.addProxiedPlayer();
-        redirectServerWrapper.removeProxiedPlayer();
+        if(redirectServerWrapper != null)
+            redirectServerWrapper.removeProxiedPlayer();
     }
 }

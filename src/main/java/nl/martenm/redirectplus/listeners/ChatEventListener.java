@@ -58,15 +58,20 @@ public class ChatEventListener implements Listener {
         ProxiedPlayer proxiedPlayer = (ProxiedPlayer) event.getSender();
 
         ServerInfo currentServer = proxiedPlayer.getServer().getInfo();
-        ServerGroup currentServerGroup = plugin.getServer(currentServer.getName()).getServerGroup();
+        ServerGroup currentServerGroup = null;
+        RedirectServerWrapper currentServerWrapper = plugin.getServer(currentServer.getName());
 
-        if(serverGroup.getAvailableServersSize() <= 1 && currentServerGroup == serverGroup) {
-            for (String message : plugin.getConfig().getStringList("messages.unable-redirect-alias-same-category")) {
-                message = ChatColor.translateAlternateColorCodes('&', message);
-                proxiedPlayer.sendMessage(new ComponentBuilder(message).create());
+        if(currentServerWrapper != null) {
+            currentServerGroup = currentServerWrapper.getServerGroup();
+
+            if(serverGroup.getAvailableServersSize() <= 1 && currentServerGroup == serverGroup) {
+                for (String message : plugin.getConfig().getStringList("messages.unable-redirect-alias-same-category")) {
+                    message = ChatColor.translateAlternateColorCodes('&', message);
+                    proxiedPlayer.sendMessage(new ComponentBuilder(message).create());
+                }
+                event.setCancelled(true);
+                return;
             }
-            event.setCancelled(true);
-            return;
         }
 
         RedirectServerWrapper server = serverGroup.getRedirectServer(proxiedPlayer.getServer().getInfo().getName(), false, serverGroup.getSpreadMode());
@@ -91,7 +96,10 @@ public class ChatEventListener implements Listener {
 
         proxiedPlayer.connect(server.getServerInfo());
         server.addProxiedPlayer();
-        plugin.getServer(currentServer.getName()).removeProxiedPlayer();
+        if(currentServerWrapper != null) {
+            currentServerWrapper.removeProxiedPlayer();
+        }
+
         event.setCancelled(true);
     }
 

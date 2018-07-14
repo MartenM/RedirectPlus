@@ -1,6 +1,6 @@
 name: RedirectPlus
 main: nl.martenm.redirectplus.RedirectPlus
-version: 2.5.0
+version: 2.6.1
 author: MartenM
 commands:
   redirect:
