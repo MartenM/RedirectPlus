@@ -33,6 +33,13 @@ public class PlayerKickListener implements Listener {
 
         ServerInfo kickedFrom = event.getKickedFrom();
 
+        if(!event.getPlayer().isConnected()) {
+            if(plugin.getConfig().getBoolean("log.inactive")) {
+                plugin.getLogger().info("Cancelled the redirectplus of " + player.getName() + " [No longer connected]");
+            }
+            return;
+        }
+
         // Blacklist
         for(String word : plugin.getConfig().getStringList("blacklist")) {
             if (BaseComponent.toLegacyText(event.getKickReasonComponent()).contains(word)) {

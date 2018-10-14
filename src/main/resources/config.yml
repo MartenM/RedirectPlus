@@ -102,6 +102,8 @@ log:
   bottom-kick: false
   # If set to true the plugin will log successful redirect attempts.
   redirected: true
+  # If set to true the plugin will log any cancelled redirect attempts due to inactive connections.
+  inactive: true
 
 # EXAMPLE SETUP
 #groups:
