@@ -35,7 +35,7 @@ public class PlayerKickListener implements Listener {
 
         if(!event.getPlayer().isConnected()) {
             if(plugin.getConfig().getBoolean("log.inactive")) {
-                plugin.getLogger().info("Cancelled the redirectplus of " + player.getName() + " [No longer connected]");
+                plugin.getLogger().info("Cancelled the redirect of " + player.getName() + " [No longer connected]");
             }
             return;
         }
@@ -44,7 +44,7 @@ public class PlayerKickListener implements Listener {
         for(String word : plugin.getConfig().getStringList("blacklist")) {
             if (BaseComponent.toLegacyText(event.getKickReasonComponent()).contains(word)) {
                 if(plugin.getConfig().getBoolean("log.blacklist"))
-                    plugin.getLogger().info("Cancelled the redirectplus of " + player.getName() + " [Blacklist: " + word + "]");
+                    plugin.getLogger().info("Cancelled the redirect of " + player.getName() + " [Blacklist: " + word + "]");
                 return;
             }
         }
@@ -68,7 +68,7 @@ public class PlayerKickListener implements Listener {
 
         if(serverGroup.isBottomKick()) {
             if(plugin.getConfig().getBoolean("log.bottom-kick"))
-                plugin.getLogger().info("Cancelled the redirectplus of " + player.getName() + " [Bottom-kick]");
+                plugin.getLogger().info("Cancelled the redirect of " + player.getName() + " [Bottom-kick]");
             return;
         }
 
