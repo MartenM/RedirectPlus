@@ -25,6 +25,13 @@ public class RedirectCommand extends Command {
     public void execute(CommandSender commandSender, String[] strings) {
         commandSender.sendMessage(new ComponentBuilder("").create());
 
+        if(plugin.isDisabled()) {
+            sendHeader(commandSender);
+            commandSender.sendMessage(new ComponentBuilder(ChatColor.RED + "  " + "The plugin has been disabled.").create());
+            commandSender.sendMessage(new ComponentBuilder(ChatColor.RED + "  " + "Please check the console for more information..").create());
+            return;
+        }
+
         if(strings.length == 0){
             sendHelp(commandSender);
             return;
@@ -88,10 +95,17 @@ public class RedirectCommand extends Command {
                 for(RedirectServerWrapper server : serverGroup.getServers()) {
                     commandSender.sendMessage(new ComponentBuilder("    " + (server.isOnline() ? ChatColor.GREEN : ChatColor.RED) + server.getServerInfo().getName()).create());
                 }
+
                 commandSender.sendMessage(new ComponentBuilder(ChatColor.GRAY + "  Connected: ").create());
                 for(RedirectServerWrapper server : serverGroup.getConnected()) {
                     commandSender.sendMessage(new ComponentBuilder("    " + (server.isOnline() ? ChatColor.GREEN : ChatColor.RED) + server.getServerInfo().getName()).create());
                 }
+
+                commandSender.sendMessage(new ComponentBuilder(ChatColor.GRAY + "  Aliases: ").create());
+                for(String alias : serverGroup.getAliases()) {
+                    commandSender.sendMessage(new ComponentBuilder("    " + ChatColor.YELLOW + alias).create());
+                }
+
                 commandSender.sendMessage(new ComponentBuilder(ChatColor.GRAY + " ").create());
             }
             return;

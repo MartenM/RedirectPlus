@@ -14,6 +14,7 @@ import nl.martenm.redirectplus.enums.SpreadMode;
 import nl.martenm.redirectplus.listeners.ChatEventListener;
 import nl.martenm.redirectplus.listeners.PlayerKickListener;
 import nl.martenm.redirectplus.metrics.Metrics;
+import nl.martenm.redirectplus.objects.ConfigurationHelper;
 import nl.martenm.redirectplus.objects.RedirectServerWrapper;
 import nl.martenm.redirectplus.objects.ServerGroup;
 
@@ -36,6 +37,7 @@ public class RedirectPlus extends Plugin {
     private List<ServerGroup> serverGroups;
     private ScheduledTask checker;
     private Metrics metrics = null;
+    private boolean disabled = false;
 
     @Override
     public void onEnable() {
@@ -54,6 +56,17 @@ public class RedirectPlus extends Plugin {
 
         getLogger().info("Doing magic stuff so that the plugin will work...");
         setup();
+
+        getLogger().info("Running some checks to make sure you did not mess up :)");
+        ConfigurationHelper configurationHelper = new ConfigurationHelper(this);
+        configurationHelper.runLoopCheck();
+        configurationHelper.runAliasCheck();
+
+        if(configurationHelper.isFatal()) {
+            this.disabled = true;
+            getProxy().getPluginManager().unregisterListeners(this);
+            return;
+        }
 
         getLogger().info("Creating bStats.org metrics...");
         metrics = new Metrics(this);
@@ -272,5 +285,9 @@ public class RedirectPlus extends Plugin {
 
     public List<ServerGroup> getServerGroups() {
         return serverGroups;
+    }
+
+    public boolean isDisabled() {
+        return disabled;
     }
 }

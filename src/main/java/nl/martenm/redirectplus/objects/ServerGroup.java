@@ -222,6 +222,10 @@ public class ServerGroup {
         return (int) servers.stream().filter(server -> server.isOnline()).count();
     }
 
+    public void setParent(String parentName) {
+        this.parent = parentName;
+    }
+
     /**
      * Get the spread method this server group uses to spread players around the server.
      * @return
