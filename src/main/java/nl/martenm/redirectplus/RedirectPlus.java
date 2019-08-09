@@ -164,6 +164,33 @@ public class RedirectPlus extends Plugin {
                 serverGroup.addServer(redirectServerWrapper);
             }
 
+            // server regex
+            if(!config.getString("groups." + key + ".servers-regex").equalsIgnoreCase("") && !config.getString("group." + key + ".servers-regex").equalsIgnoreCase("none")) {
+                String regexString = config.getString("groups." + key + ".servers-regex");
+
+                for(Map.Entry<String, ServerInfo> entry : getProxy().getServers().entrySet()) {
+                    // If server name does not match the regex string we continue.
+                    if(!entry.getKey().matches(regexString)) {
+                        continue;
+                    }
+
+                    // Otherwise, add it do the servergroup.
+                    // Found server, add it to the global server list to allow easy ping.
+                    String servername = entry.getKey();
+                    if(servers.containsKey(servername)) {
+                        // To prevent and to be more flexible we ignore servers that have already been assigned a server group.
+                        // We do notify about this in the console though.
+                        getLogger().info(String.format("Server %s matched the regex of %s but is not added due to already being assigned a server group.", servername, serverGroup.getName()));
+                        continue;
+                    }
+
+                    RedirectServerWrapper redirectServerWrapper = new RedirectServerWrapper(entry.getValue(), serverGroup, true);
+                    servers.put(servername, redirectServerWrapper);
+
+                    serverGroup.addServer(redirectServerWrapper);
+                }
+            }
+
             for(String servername : config.getStringList("groups." + key + ".connected")) {
                 ServerInfo info = getProxy().getServerInfo(servername.replace("%", "."));
                 if (info == null) {
@@ -179,6 +206,33 @@ public class RedirectPlus extends Plugin {
                     servers.put(servername, redirectServerWrapper);
 
                 serverGroup.addConnectedServer(redirectServerWrapper);
+            }
+
+            // Connected regex
+            if(!config.getString("groups." + key + ".connected-regex").equalsIgnoreCase("none")) {
+                String regexString = config.getString("groups." + key + ".connected-regex");
+
+                for(Map.Entry<String, ServerInfo> entry : getProxy().getServers().entrySet()) {
+                    // If server name does not match the regex string we continue.
+                    if(!entry.getKey().matches(regexString)) {
+                        continue;
+                    }
+
+                    // Otherwise, add it do the servergroup.
+                    // Found server, add it to the global server list to allow easy ping.
+                    String servername = entry.getKey();
+                    if(servers.containsKey(servername)) {
+                        // To prevent and to be more flexible we ignore servers that have already been assigned a server group.
+                        // We do notify about this in the console though.
+                        getLogger().info(String.format("Server %s matched the regex of %s but is not added due to already being assigned a server group.", servername, serverGroup.getName()));
+                        continue;
+                    }
+
+                    RedirectServerWrapper redirectServerWrapper = new RedirectServerWrapper(entry.getValue(), serverGroup, true);
+                    servers.put(servername, redirectServerWrapper);
+
+                    serverGroup.addConnectedServer(redirectServerWrapper);
+                }
             }
 
             serverGroups.add(serverGroup);

@@ -75,8 +75,10 @@ groups:
     servers:
       - lobby1
       - lobby2
+    servers-regex: 'none'
     # Servers that are connected to this group, but they won't be redirected to:
     connected: {}
+    connected-regex: 'none'
     # Aliases can be used to redirect people to the server group when they use a certain command (Eg: lobby, hub, survival, towny, etc)
     aliases: {}
   games:
@@ -85,9 +87,11 @@ groups:
     parent-group: lobby
     # These servers do not have lobbies them self so we use a parent group.
     servers: {}
+    servers-regex: 'none'
     connected:
       - survival
       - pvp
+    connected-regex: 'none'
     # Aliases can be used to redirect people to the server group when they use a certain command (Eg: lobby, hub, survival, towny, etc)
     aliases:
       - games

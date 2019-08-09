@@ -3,6 +3,7 @@ package nl.martenm.redirectplus.commands;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import nl.martenm.redirectplus.RedirectPlus;
 import nl.martenm.redirectplus.objects.RedirectServerWrapper;
@@ -25,20 +26,25 @@ public class RedirectCommand extends Command {
     public void execute(CommandSender commandSender, String[] strings) {
         commandSender.sendMessage(new ComponentBuilder("").create());
 
+        String colourMode = ChatColor.GRAY.toString();
+        if(!(commandSender instanceof ProxiedPlayer)) {
+           colourMode = ChatColor.WHITE.toString();
+        }
+
         if(plugin.isDisabled()) {
-            sendHeader(commandSender);
+            sendHeader(commandSender, colourMode);
             commandSender.sendMessage(new ComponentBuilder(ChatColor.RED + "  " + "The plugin has been disabled.").create());
             commandSender.sendMessage(new ComponentBuilder(ChatColor.RED + "  " + "Please check the console for more information..").create());
             return;
         }
 
         if(strings.length == 0){
-            sendHelp(commandSender);
+            sendHelp(commandSender, colourMode);
             return;
         }
 
         if(strings[0].equalsIgnoreCase("help")){
-            sendHeader(commandSender);
+            sendHeader(commandSender, colourMode);
             commandSender.sendMessage(new ComponentBuilder(ChatColor.GREEN + "  " + "/rd servers").create());
             commandSender.sendMessage(new ComponentBuilder(ChatColor.GREEN + "  " + "/rd groups").create());
             commandSender.sendMessage(new ComponentBuilder(ChatColor.GREEN + "  " + "/rd refresh").create());
@@ -59,67 +65,67 @@ public class RedirectCommand extends Command {
         }
 
         else if(strings[0].equalsIgnoreCase("servers")){
-            sendHeader(commandSender);
+            sendHeader(commandSender, colourMode);
             for(RedirectServerWrapper server : plugin.getRedirectServers())
             {
-                commandSender.sendMessage(new ComponentBuilder(ChatColor.WHITE + ChatColor.BOLD.toString() + server.getServerInfo().getName() + ChatColor.GRAY + ": ").create());
-                commandSender.sendMessage(new ComponentBuilder(ChatColor.GRAY + "  Status: " + (server.isOnline() ? ChatColor.GREEN + "Online" : ChatColor.RED + "Offline")).create());
-                commandSender.sendMessage(new ComponentBuilder(ChatColor.GRAY + "  Group: " + ChatColor.YELLOW + server.getServerGroup().getName()).create());
-                commandSender.sendMessage(new ComponentBuilder(ChatColor.GRAY + "  Receives Redirects: " + (server.isRedirectable() ? ChatColor.GREEN + "Yes" : ChatColor.YELLOW + "No")).create());
-                commandSender.sendMessage(new ComponentBuilder(ChatColor.GRAY + "  Players (aprox): " + (server.getOnlinePlayersCount() == 0 ? ChatColor.RED.toString() + server.getOnlinePlayersCount() : ChatColor.YELLOW.toString() + server.getOnlinePlayersCount())).create());
+                commandSender.sendMessage(new ComponentBuilder(ChatColor.WHITE + ChatColor.BOLD.toString() + server.getServerInfo().getName() + colourMode + ": ").create());
+                commandSender.sendMessage(new ComponentBuilder(colourMode + "  Status: " + (server.isOnline() ? ChatColor.GREEN + "Online" : ChatColor.RED + "Offline")).create());
+                commandSender.sendMessage(new ComponentBuilder(colourMode + "  Group: " + ChatColor.YELLOW + server.getServerGroup().getName()).create());
+                commandSender.sendMessage(new ComponentBuilder(colourMode + "  Receives Redirects: " + (server.isRedirectable() ? ChatColor.GREEN + "Yes" : ChatColor.YELLOW + "No")).create());
+                commandSender.sendMessage(new ComponentBuilder(colourMode + "  Players (aprox): " + (server.getOnlinePlayersCount() == 0 ? ChatColor.RED.toString() + server.getOnlinePlayersCount() : ChatColor.YELLOW.toString() + server.getOnlinePlayersCount())).create());
 
-                commandSender.sendMessage(new ComponentBuilder(ChatColor.GRAY + "  Moth: " + ChatColor.GRAY + server.getServerInfo().getMotd()).create());
-                commandSender.sendMessage(new ComponentBuilder(ChatColor.GRAY + " ").create());
+                commandSender.sendMessage(new ComponentBuilder(colourMode + "  Moth: " + colourMode + server.getServerInfo().getMotd()).create());
+                commandSender.sendMessage(new ComponentBuilder(colourMode + " ").create());
             }
             return;
         }
         else if(strings[0].equalsIgnoreCase("groups")){
-            sendHeader(commandSender);
+            sendHeader(commandSender, colourMode);
             for(ServerGroup serverGroup : plugin.getServerGroups())
             {
-                commandSender.sendMessage(new ComponentBuilder(ChatColor.WHITE + ChatColor.BOLD.toString() + serverGroup.getName() + ChatColor.GRAY + ": ").create());
-                commandSender.sendMessage(new ComponentBuilder(ChatColor.GRAY + "  Bottom-kick: " + (serverGroup.isBottomKick() ? ChatColor.GREEN + "Yes" : ChatColor.YELLOW + "No")).create());
-                commandSender.sendMessage(new ComponentBuilder(ChatColor.GRAY + "  Spread Players: " + (serverGroup.isSpread() ? ChatColor.GREEN + "Yes" : ChatColor.YELLOW + "No")).create());
-                commandSender.sendMessage(new ComponentBuilder(ChatColor.GRAY + "  Spread Mode: " + ChatColor.YELLOW + serverGroup.getSpreadMode().toString()).create());
-                commandSender.sendMessage(new ComponentBuilder(ChatColor.GRAY + "  Min. Progressive: " + ChatColor.YELLOW + serverGroup.getMinimalProgressive()).create());
-                commandSender.sendMessage(new ComponentBuilder(ChatColor.GRAY + "  Parent Group: " + (serverGroup.getParent() != null ? ChatColor.GREEN + serverGroup.getParent().getName() : ChatColor.YELLOW + "None")).create());
+                commandSender.sendMessage(new ComponentBuilder(ChatColor.WHITE + ChatColor.BOLD.toString() + serverGroup.getName() + colourMode + ": ").create());
+                commandSender.sendMessage(new ComponentBuilder(colourMode + "  Bottom-kick: " + (serverGroup.isBottomKick() ? ChatColor.GREEN + "Yes" : ChatColor.YELLOW + "No")).create());
+                commandSender.sendMessage(new ComponentBuilder(colourMode + "  Spread Players: " + (serverGroup.isSpread() ? ChatColor.GREEN + "Yes" : ChatColor.YELLOW + "No")).create());
+                commandSender.sendMessage(new ComponentBuilder(colourMode + "  Spread Mode: " + ChatColor.YELLOW + serverGroup.getSpreadMode().toString()).create());
+                commandSender.sendMessage(new ComponentBuilder(colourMode + "  Min. Progressive: " + ChatColor.YELLOW + serverGroup.getMinimalProgressive()).create());
+                commandSender.sendMessage(new ComponentBuilder(colourMode + "  Parent Group: " + (serverGroup.getParent() != null ? ChatColor.GREEN + serverGroup.getParent().getName() : ChatColor.YELLOW + "None")).create());
 
                 int onlinePlayers = serverGroup.getServers().stream()
                         .filter(server -> server.isOnline())
                         .mapToInt(server -> server.getOnlinePlayersCount())
                         .sum();
-                commandSender.sendMessage(new ComponentBuilder(ChatColor.GRAY + "  Players (aprox): " + (onlinePlayers == 0 ? ChatColor.RED.toString() + onlinePlayers : ChatColor.YELLOW.toString() + onlinePlayers)).create());
+                commandSender.sendMessage(new ComponentBuilder(colourMode + "  Players (aprox): " + (onlinePlayers == 0 ? ChatColor.RED.toString() + onlinePlayers : ChatColor.YELLOW.toString() + onlinePlayers)).create());
 
 
-                commandSender.sendMessage(new ComponentBuilder(ChatColor.GRAY + "  Servers: ").create());
+                commandSender.sendMessage(new ComponentBuilder(colourMode + "  Servers: ").create());
                 for(RedirectServerWrapper server : serverGroup.getServers()) {
                     commandSender.sendMessage(new ComponentBuilder("    " + (server.isOnline() ? ChatColor.GREEN : ChatColor.RED) + server.getServerInfo().getName()).create());
                 }
 
-                commandSender.sendMessage(new ComponentBuilder(ChatColor.GRAY + "  Connected: ").create());
+                commandSender.sendMessage(new ComponentBuilder(colourMode + "  Connected: ").create());
                 for(RedirectServerWrapper server : serverGroup.getConnected()) {
                     commandSender.sendMessage(new ComponentBuilder("    " + (server.isOnline() ? ChatColor.GREEN : ChatColor.RED) + server.getServerInfo().getName()).create());
                 }
 
-                commandSender.sendMessage(new ComponentBuilder(ChatColor.GRAY + "  Aliases: ").create());
+                commandSender.sendMessage(new ComponentBuilder(colourMode + "  Aliases: ").create());
                 for(String alias : serverGroup.getAliases()) {
                     commandSender.sendMessage(new ComponentBuilder("    " + ChatColor.YELLOW + alias).create());
                 }
 
-                commandSender.sendMessage(new ComponentBuilder(ChatColor.GRAY + " ").create());
+                commandSender.sendMessage(new ComponentBuilder(colourMode + " ").create());
             }
             return;
         }
-        sendHelp(commandSender);
+        sendHelp(commandSender, colourMode);
     }
 
-    private void sendHelp(CommandSender commandSender){
-        sendHeader(commandSender);
+    private void sendHelp(CommandSender commandSender, String colourMode){
+        sendHeader(commandSender, colourMode);
         commandSender.sendMessage(new ComponentBuilder("  " + ChatColor.GREEN + plugin.getDescription().getName() + " " + plugin.getDescription().getVersion()).create());
-        commandSender.sendMessage(new ComponentBuilder(ChatColor.GRAY + "  Use " + ChatColor.GREEN + "/rd help" + ChatColor.GRAY + " for a list of commands.").create());
+        commandSender.sendMessage(new ComponentBuilder(colourMode + "  Use " + ChatColor.GREEN + "/rd help" + colourMode + " for a list of commands.").create());
     }
 
-    private void sendHeader(CommandSender commandSender){
+    private void sendHeader(CommandSender commandSender, String colourMode){
         commandSender.sendMessage(new ComponentBuilder(ChatColor.DARK_GRAY + "+──────┤ " + ChatColor.BLUE + ChatColor.BOLD + "Redirect" + ChatColor.GOLD + ChatColor.BOLD + " + " + ChatColor.DARK_GRAY + "├──────+").create());
     }
 }
