@@ -89,6 +89,9 @@ public class RedirectCommand extends Command {
                 commandSender.sendMessage(new ComponentBuilder(colourMode + "  Spread Mode: " + ChatColor.YELLOW + serverGroup.getSpreadMode().toString()).create());
                 commandSender.sendMessage(new ComponentBuilder(colourMode + "  Min. Progressive: " + ChatColor.YELLOW + serverGroup.getMinimalProgressive()).create());
                 commandSender.sendMessage(new ComponentBuilder(colourMode + "  Parent Group: " + (serverGroup.getParent() != null ? ChatColor.GREEN + serverGroup.getParent().getName() : ChatColor.YELLOW + "None")).create());
+                if(serverGroup.getPermission() != null) {
+                    commandSender.sendMessage(new ComponentBuilder(colourMode + "  Permission: " + ChatColor.YELLOW + serverGroup.getPermission()).create());
+                }
 
                 int onlinePlayers = serverGroup.getServers().stream()
                         .filter(server -> server.isOnline())

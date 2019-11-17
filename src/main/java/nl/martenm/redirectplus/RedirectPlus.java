@@ -76,6 +76,7 @@ public class RedirectPlus extends Plugin {
 
     @Override
     public void onDisable() {
+        this.disabled = true;
         checker.cancel();
         getLogger().info("Disabling. Thanks for using the plugin!");
     }
@@ -146,7 +147,8 @@ public class RedirectPlus extends Plugin {
                     config.getString("groups." + key + ".parent-group"),
                     config.getStringList("groups." + key + ".aliases"),
                     spreadMode,
-                    minimalProgressive
+                    minimalProgressive,
+                    config.getString("groups." + key + ".permission")
             );
 
             for(String servername : config.getStringList("groups." + key + ".servers")) {
@@ -258,6 +260,12 @@ public class RedirectPlus extends Plugin {
             }
 
             info.ping((serverPing, throwable) -> {
+                // Don't update and schedule when the plugin has been disabled.
+                // This will cause errors to be thrown.
+                if(this.disabled) {
+                    return;
+                }
+
                 getProxy().getScheduler().schedule(this, () -> {
 
                     // Get old data and populate the event.

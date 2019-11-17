@@ -13,6 +13,8 @@ messages:
     - "&f"
     - "&cUnable to send you to another server in this category."
     - "&f"
+  alias-no-permission:
+    - "&cYou don't have enough permissions to join this server group."
 
 # The amount of time between checking if a server is online.
 # Players won't be connected to offline servers.
@@ -133,6 +135,7 @@ log:
 #    bottom-kick: false
 #    spread: true
 #    parent-group: none
+#    permission: server.survivalgames
 #    servers:
 #      - sg-lobby-1
 #      - sg-lobby-2

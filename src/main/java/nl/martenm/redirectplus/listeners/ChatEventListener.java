@@ -57,6 +57,15 @@ public class ChatEventListener implements Listener {
 
         ProxiedPlayer proxiedPlayer = (ProxiedPlayer) event.getSender();
 
+        if(!proxiedPlayer.hasPermission(serverGroup.getPermission())) {
+            for (String message : plugin.getConfig().getStringList("messages.alias-no-permission")) {
+                message = ChatColor.translateAlternateColorCodes('&', message);
+                proxiedPlayer.sendMessage(new ComponentBuilder(message).create());
+            }
+            event.setCancelled(true);
+            return;
+        }
+
         ServerInfo currentServer = proxiedPlayer.getServer().getInfo();
         ServerGroup currentServerGroup = null;
         RedirectServerWrapper currentServerWrapper = plugin.getServer(currentServer.getName());
@@ -64,17 +73,19 @@ public class ChatEventListener implements Listener {
         if(currentServerWrapper != null) {
             currentServerGroup = currentServerWrapper.getServerGroup();
 
-            if(serverGroup.getAvailableServersSize() <= 1 && currentServerGroup == serverGroup) {
-                for (String message : plugin.getConfig().getStringList("messages.unable-redirect-alias-same-category")) {
-                    message = ChatColor.translateAlternateColorCodes('&', message);
-                    proxiedPlayer.sendMessage(new ComponentBuilder(message).create());
+            if(serverGroup == currentServerGroup && serverGroup.getAvailableServersSize() <= 1) {
+                if(serverGroup.getServers().get(0) == currentServerWrapper || serverGroup.getAvailableServersSize() == 0) {
+                    for (String message : plugin.getConfig().getStringList("messages.unable-redirect-alias-same-category")) {
+                        message = ChatColor.translateAlternateColorCodes('&', message);
+                        proxiedPlayer.sendMessage(new ComponentBuilder(message).create());
+                    }
+                    event.setCancelled(true);
+                    return;
                 }
-                event.setCancelled(true);
-                return;
             }
         }
 
-        RedirectServerWrapper server = serverGroup.getRedirectServer(proxiedPlayer.getServer().getInfo().getName(), false, serverGroup.getSpreadMode());
+        RedirectServerWrapper server = serverGroup.getRedirectServer(proxiedPlayer, proxiedPlayer.getServer().getInfo().getName(), false, serverGroup.getSpreadMode());
 
         if(server == null) {
             for (String message : plugin.getConfig().getStringList("messages.unable-redirect-alias")) {

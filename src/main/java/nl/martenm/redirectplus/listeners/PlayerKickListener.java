@@ -72,7 +72,7 @@ public class PlayerKickListener implements Listener {
             return;
         }
 
-        RedirectServerWrapper targetServer = serverGroup.getRedirectServer(kickedFrom.getName(), true, serverGroup.getSpreadMode());
+        RedirectServerWrapper targetServer = serverGroup.getRedirectServer(player, kickedFrom.getName(), true, serverGroup.getSpreadMode());
         if(targetServer == null) {
             if(plugin.getConfig().getBoolean("log.redirectplus-failed"))
                 plugin.getLogger().info("Redirect of " + player.getName() + " failed. [No server found]");

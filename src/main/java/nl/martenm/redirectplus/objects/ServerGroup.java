@@ -1,5 +1,7 @@
 package nl.martenm.redirectplus.objects;
 
+import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.connection.Server;
 import nl.martenm.redirectplus.RedirectPlus;
 import nl.martenm.redirectplus.enums.SpreadMode;
 
@@ -26,12 +28,13 @@ public class ServerGroup {
     private boolean spread;
     private SpreadMode spreadMode;
     private String[] aliases;
+    private String permission;
 
     /* Vars for spreading */
     private int spreadCounter = 0;
     private int minimalProgressive = 0;
 
-    public ServerGroup(RedirectPlus redirectPlus, String name, boolean bottomKick, boolean spread, String parent, String[] aliases, SpreadMode spreadMode, int minimalProgressive) {
+    public ServerGroup(RedirectPlus redirectPlus, String name, boolean bottomKick, boolean spread, String parent, String[] aliases, SpreadMode spreadMode, int minimalProgressive, String permission) {
         this.redirectPlus = redirectPlus;
         this.name = name;
         this.bottomKick = bottomKick;
@@ -51,10 +54,13 @@ public class ServerGroup {
             this.spreadMode = spreadMode;
             this.minimalProgressive = minimalProgressive;
         }
+
+        if(permission.equalsIgnoreCase("")) this.permission = null;
+        else this.permission = permission;
     }
 
-    public ServerGroup(RedirectPlus redirectPlus, String name, boolean bottomKick, boolean spread, String parent, List<String> aliases, SpreadMode spreadMode, int minimalProgressive) {
-        this(redirectPlus, name, bottomKick, spread, parent, aliases.toArray(new String[aliases.size()]), spreadMode, minimalProgressive);
+    public ServerGroup(RedirectPlus redirectPlus, String name, boolean bottomKick, boolean spread, String parent, List<String> aliases, SpreadMode spreadMode, int minimalProgressive, String permission) {
+        this(redirectPlus, name, bottomKick, spread, parent, aliases.toArray(new String[aliases.size()]), spreadMode, minimalProgressive, permission);
     }
 
     /**
@@ -135,8 +141,8 @@ public class ServerGroup {
      * @param useParent Whether we are allowed to select from the parent group.
      * @return The server to be redirected to. Null if none.
      */
-    public RedirectServerWrapper getRedirectServer(String oldServer, boolean useParent) {
-        return getRedirectServer(oldServer, useParent, SpreadMode.CYCLE);
+    public RedirectServerWrapper getRedirectServer(ProxiedPlayer player, String oldServer, boolean useParent) {
+        return getRedirectServer(player, oldServer, useParent, SpreadMode.CYCLE);
     }
 
     /**
@@ -146,8 +152,21 @@ public class ServerGroup {
      * @param spreadMode Spread mode that should be used to pick a server.
      * @return The server to be redirected to. Null if none.
      */
-    public RedirectServerWrapper getRedirectServer(String oldServer, boolean useParent, SpreadMode spreadMode) {
+    public RedirectServerWrapper getRedirectServer(ProxiedPlayer player, String oldServer, boolean useParent, SpreadMode spreadMode) {
         RedirectServerWrapper redirectServer = null;
+
+        // Check if this server group has a permission assigned.
+        if(permission != null) {
+            // If there is a permission check if the user has it.
+            // If the user does not have the permission grab the parent server group and use that instead.
+            if(!player.hasPermission(permission)) {
+                // Player does not have the permission.
+                ServerGroup parent = getParent();
+                if(parent == null || !useParent) return null;
+
+                return parent.getRedirectServer(player, oldServer, useParent, spreadMode);
+            }
+        }
 
         // Get online servers
         List<RedirectServerWrapper> onlineServers = new ArrayList<>();
@@ -162,7 +181,7 @@ public class ServerGroup {
             ServerGroup parent = getParent();
             if(parent == null || !useParent) return null;
 
-            return parent.getRedirectServer(oldServer, useParent, spreadMode);
+            return parent.getRedirectServer(player, oldServer, useParent, spreadMode);
         }
 
         if(spread) {
@@ -191,7 +210,7 @@ public class ServerGroup {
                     }
                 }
 
-                return getRedirectServer(oldServer, useParent, SpreadMode.LOWEST);
+                return getRedirectServer(player, oldServer, useParent, SpreadMode.LOWEST);
             }
             else if(spreadMode == SpreadMode.HIGHEST) {
                 return onlineServers.stream().max(Comparator.comparing(RedirectServerWrapper::getOnlinePlayersCount)).get();
@@ -203,15 +222,6 @@ public class ServerGroup {
         } else redirectServer = onlineServers.get(0);
 
         return redirectServer;
-    }
-
-    /**
-     * Get a new server based on the old server and parent group.
-     * @param oldServer The old server the player has been kicked from.
-     * @return
-     */
-    public RedirectServerWrapper getRedirectServer(String oldServer) {
-        return getRedirectServer(oldServer, true);
     }
 
     public String[] getAliases() {
@@ -244,5 +254,13 @@ public class ServerGroup {
 
     public void setMinimalProgressive(int minimalProgressive) {
         this.minimalProgressive = minimalProgressive;
+    }
+
+    public String getPermission() {
+        return permission;
+    }
+
+    public void setPermission(String permission) {
+        this.permission = permission;
     }
 }
