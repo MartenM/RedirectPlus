@@ -57,13 +57,15 @@ public class ChatEventListener implements Listener {
 
         ProxiedPlayer proxiedPlayer = (ProxiedPlayer) event.getSender();
 
-        if(!proxiedPlayer.hasPermission(serverGroup.getPermission())) {
-            for (String message : plugin.getConfig().getStringList("messages.alias-no-permission")) {
-                message = ChatColor.translateAlternateColorCodes('&', message);
-                proxiedPlayer.sendMessage(new ComponentBuilder(message).create());
+        if(serverGroup.isRestricted()) {
+            if(!proxiedPlayer.hasPermission(serverGroup.getPermission())) {
+                for (String message : plugin.getConfig().getStringList("messages.alias-no-permission")) {
+                    message = ChatColor.translateAlternateColorCodes('&', message);
+                    proxiedPlayer.sendMessage(new ComponentBuilder(message).create());
+                }
+                event.setCancelled(true);
+                return;
             }
-            event.setCancelled(true);
-            return;
         }
 
         ServerInfo currentServer = proxiedPlayer.getServer().getInfo();

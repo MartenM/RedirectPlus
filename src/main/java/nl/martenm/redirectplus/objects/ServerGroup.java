@@ -156,7 +156,7 @@ public class ServerGroup {
         RedirectServerWrapper redirectServer = null;
 
         // Check if this server group has a permission assigned.
-        if(permission != null) {
+        if(isRestricted()) {
             // If there is a permission check if the user has it.
             // If the user does not have the permission grab the parent server group and use that instead.
             if(!player.hasPermission(permission)) {
@@ -224,21 +224,33 @@ public class ServerGroup {
         return redirectServer;
     }
 
+    /**
+     * Get the aliases for this server group.
+     * @return The aliases for this server group as array.
+     */
     public String[] getAliases() {
         return aliases;
     }
 
+    /**
+     * Get the amount of available servers this server group offers.
+     * @return
+     */
     public int getAvailableServersSize() {
         return (int) servers.stream().filter(server -> server.isOnline()).count();
     }
 
+    /**
+     * Set the parent of this server group.
+     * @param parentName The parent groups name as string
+     */
     public void setParent(String parentName) {
         this.parent = parentName;
     }
 
     /**
      * Get the spread method this server group uses to spread players around the server.
-     * @return
+     * @return The spreadmode enum
      */
     public SpreadMode getSpreadMode() {
         return spreadMode;
@@ -262,5 +274,14 @@ public class ServerGroup {
 
     public void setPermission(String permission) {
         this.permission = permission;
+    }
+
+    /**
+     * Returns true if this section is restricted.
+     * If the section is restricted getPersmission() != null.
+     * @return True if restricted
+     */
+    public boolean isRestricted() {
+        return permission != null;
     }
 }
