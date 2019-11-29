@@ -66,6 +66,11 @@ public class PlayerKickListener implements Listener {
             serverGroup = redirectServerWrapper.getServerGroup();
         } else serverGroup = plugin.getUnkownServerGroup();
 
+        if(serverGroup == null) {
+            plugin.getLogger().info(String.format("Failed to redirect %s from %s because the server is not in a server group!", player.getName(), kickedFrom.getName()));
+            return;
+        }
+
         if(serverGroup.isBottomKick()) {
             if(plugin.getConfig().getBoolean("log.bottom-kick"))
                 plugin.getLogger().info("Cancelled the redirect of " + player.getName() + " [Bottom-kick]");
