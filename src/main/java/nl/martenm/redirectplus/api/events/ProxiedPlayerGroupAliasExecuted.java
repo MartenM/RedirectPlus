@@ -17,15 +17,13 @@ public class ProxiedPlayerGroupAliasExecuted extends Event implements Cancellabl
 
     private boolean cancelled = false;
     private String alias;
-    private String wholeCommand;
     private ProxiedPlayer player;
     private ServerGroup currentServerGroup;
     private RedirectServerWrapper target;
 
-    public ProxiedPlayerGroupAliasExecuted (ProxiedPlayer player, String alias, String wholeCommand, ServerGroup currentServerGroup, RedirectServerWrapper target) {
+    public ProxiedPlayerGroupAliasExecuted (ProxiedPlayer player, String alias, ServerGroup currentServerGroup, RedirectServerWrapper target) {
         this.player = player;
         this.alias = alias;
-        this.wholeCommand = wholeCommand;
         this.currentServerGroup = currentServerGroup;
         this.target = target;
     }
@@ -42,10 +40,6 @@ public class ProxiedPlayerGroupAliasExecuted extends Event implements Cancellabl
 
     public String getAlias() {
         return alias;
-    }
-
-    public String getWholeCommand() {
-        return wholeCommand;
     }
 
     public ProxiedPlayer getPlayer() {

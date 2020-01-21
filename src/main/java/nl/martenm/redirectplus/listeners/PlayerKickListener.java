@@ -3,6 +3,7 @@ package nl.martenm.redirectplus.listeners;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ServerKickEvent;
@@ -106,10 +107,19 @@ public class PlayerKickListener implements Listener {
 
         if(!hideMessage) {
             // Schedule the for loop that sends messages so a delay can be added if needed.
+
             plugin.getProxy().getScheduler().schedule(plugin, () -> {
                 for (String message : plugin.getConfig().getStringList("messages.redirected")) {
-                    message = ChatColor.translateAlternateColorCodes('&', message.replace("%reason%", BaseComponent.toLegacyText(event.getKickReasonComponent())));
-                    player.sendMessage(new ComponentBuilder(message).create());
+
+                    // Placeholder replacement.
+                    message = message.replace("%from-server%", kickedFrom.getName());
+                    message = message.replace("%to-server%", targetServer.getServerInfo().getName());
+                    message = message.replace("%from-group%", (redirectServerWrapper == null ? "No Group" : redirectServerWrapper.getServerGroup().getName()));
+                    message = message.replace("%to-group%", targetServer.getServerGroup().getName());
+                    message = message.replace("%reason%", BaseComponent.toLegacyText(event.getKickReasonComponent()));
+
+                    message = ChatColor.translateAlternateColorCodes('&', message);
+                    player.sendMessage(TextComponent.fromLegacyText(message));
                 }
             }, plugin.getConfig().getInt("delay"), TimeUnit.SECONDS);
         }

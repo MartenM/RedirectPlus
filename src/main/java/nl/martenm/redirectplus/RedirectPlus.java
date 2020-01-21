@@ -13,6 +13,7 @@ import nl.martenm.redirectplus.commands.RedirectCommand;
 import nl.martenm.redirectplus.enums.SpreadMode;
 import nl.martenm.redirectplus.listeners.ChatEventListener;
 import nl.martenm.redirectplus.listeners.PlayerKickListener;
+import nl.martenm.redirectplus.listeners.channels.MessageListenerExecuteAlias;
 import nl.martenm.redirectplus.metrics.Metrics;
 import nl.martenm.redirectplus.objects.ConfigurationHelper;
 import nl.martenm.redirectplus.objects.RedirectServerWrapper;
@@ -31,6 +32,8 @@ import java.util.stream.Collectors;
  * @since 5-1-2018.
  */
 public class RedirectPlus extends Plugin {
+
+    public static final String CHANNEL_NAME = "martenm:bungeeredirectplus";
 
     private Configuration config;
     private Map<String, RedirectServerWrapper> servers;
@@ -53,6 +56,9 @@ public class RedirectPlus extends Plugin {
 
         getLogger().info("Registering commands...");
         registerCommands();
+
+        getLogger().info("Registering plugin message channel...");
+        getProxy().registerChannel(CHANNEL_NAME);
 
         getLogger().info("Doing magic stuff so that the plugin will work...");
         setup();
@@ -113,6 +119,7 @@ public class RedirectPlus extends Plugin {
     private void registerEvents(){
         getProxy().getPluginManager().registerListener(this, new PlayerKickListener(this));
         getProxy().getPluginManager().registerListener(this, new ChatEventListener(this));
+        getProxy().getPluginManager().registerListener(this, new MessageListenerExecuteAlias(this));
     }
 
     /**

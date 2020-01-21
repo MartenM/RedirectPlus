@@ -2,6 +2,7 @@ package nl.martenm.redirectplus.listeners;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
@@ -37,34 +38,35 @@ public class ChatEventListener implements Listener {
             return;
         }
 
-        ServerGroup serverGroup = null;
+        if(!(event.getSender() instanceof ProxiedPlayer)) {
+            // Only console player senders.
+            return;
+        }
 
+        ProxiedPlayer proxiedPlayer = (ProxiedPlayer) event.getSender();
+        event.setCancelled(handleAliasExecution(plugin, args[0], proxiedPlayer));
+    }
+
+    public static boolean handleAliasExecution(RedirectPlus plugin, String command, ProxiedPlayer proxiedPlayer) {
+        ServerGroup serverGroup = null;
         for(ServerGroup sg : plugin.getServerGroups()) {
-            if(Arrays.stream(sg.getAliases()).anyMatch(alias -> alias.equalsIgnoreCase(args[0]))) {
+            if(Arrays.stream(sg.getAliases()).anyMatch(alias -> alias.equalsIgnoreCase(command))) {
                 serverGroup = sg;
                 break;
             }
         }
 
         if(serverGroup == null) {
-            return;
+            return false;
         }
-
-        if(!(event.getSender() instanceof ProxiedPlayer)) {
-           // Wut happend here?!
-           return;
-        }
-
-        ProxiedPlayer proxiedPlayer = (ProxiedPlayer) event.getSender();
 
         if(serverGroup.isRestricted()) {
             if(!proxiedPlayer.hasPermission(serverGroup.getPermission())) {
                 for (String message : plugin.getConfig().getStringList("messages.alias-no-permission")) {
                     message = ChatColor.translateAlternateColorCodes('&', message);
-                    proxiedPlayer.sendMessage(new ComponentBuilder(message).create());
+                    proxiedPlayer.sendMessage(TextComponent.fromLegacyText(message));
                 }
-                event.setCancelled(true);
-                return;
+                return true;
             }
         }
 
@@ -79,10 +81,9 @@ public class ChatEventListener implements Listener {
                 if(serverGroup.getServers().get(0) == currentServerWrapper || serverGroup.getAvailableServersSize() == 0) {
                     for (String message : plugin.getConfig().getStringList("messages.unable-redirect-alias-same-category")) {
                         message = ChatColor.translateAlternateColorCodes('&', message);
-                        proxiedPlayer.sendMessage(new ComponentBuilder(message).create());
+                        proxiedPlayer.sendMessage(TextComponent.fromLegacyText(message));
                     }
-                    event.setCancelled(true);
-                    return;
+                    return true;
                 }
             }
         }
@@ -92,18 +93,17 @@ public class ChatEventListener implements Listener {
         if(server == null) {
             for (String message : plugin.getConfig().getStringList("messages.unable-redirect-alias")) {
                 message = ChatColor.translateAlternateColorCodes('&', message);
-                proxiedPlayer.sendMessage(new ComponentBuilder(message).create());
+                proxiedPlayer.sendMessage(TextComponent.fromLegacyText(message));
             }
-            event.setCancelled(true);
-            return;
+            return true;
         }
 
         // Redirect API
-        ProxiedPlayerGroupAliasExecuted apiEvent = new ProxiedPlayerGroupAliasExecuted(proxiedPlayer, args[0], event.getMessage().substring(1), currentServerGroup, server);
+        ProxiedPlayerGroupAliasExecuted apiEvent = new ProxiedPlayerGroupAliasExecuted(proxiedPlayer, command, currentServerGroup, server);
         plugin.getProxy().getPluginManager().callEvent(apiEvent);
 
         if(apiEvent.isCancelled()) {
-            return;
+            return false;
         }
         //
 
@@ -113,8 +113,7 @@ public class ChatEventListener implements Listener {
             currentServerWrapper.removeProxiedPlayer();
         }
 
-        event.setCancelled(true);
+        return true;
     }
-
 
 }

@@ -1,5 +1,7 @@
 # All the messages send by the plugin.
 messages:
+  # Supported placeholders for 'redirected' message:
+  # %from-server%  %to-server%  %from-group%  %to-group%  %reason%
   redirected:
     - "&f"
     - "&cAn kick occurred in your connection. &cReason:&r %reason%"
