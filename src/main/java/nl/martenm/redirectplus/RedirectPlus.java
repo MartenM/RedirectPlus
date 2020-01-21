@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
  */
 public class RedirectPlus extends Plugin {
 
-    public static final String CHANNEL_NAME = "martenm:bungeeredirectplus";
+    public static final String CHANNEL_NAME = "martenm:redirectplus";
 
     private Configuration config;
     private Map<String, RedirectServerWrapper> servers;
