@@ -28,6 +28,8 @@ public class ChatEventListener implements Listener {
 
     @EventHandler
     public void handleChatEvent(ChatEvent event) {
+        
+        if(event.isCancelled()) return;
 
         if(!event.getMessage().startsWith("/")) {
             return;
