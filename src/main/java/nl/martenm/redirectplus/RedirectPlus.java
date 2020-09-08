@@ -51,14 +51,8 @@ public class RedirectPlus extends Plugin {
         getLogger().info("Registering config...");
         registerConfig();
 
-        getLogger().info("Creating event listeners...");
-        registerEvents();
-
         getLogger().info("Registering commands...");
         registerCommands();
-
-        getLogger().info("Registering plugin message channel...");
-        getProxy().registerChannel(CHANNEL_NAME);
 
         getLogger().info("Doing magic stuff so that the plugin will work...");
         setup();
@@ -68,11 +62,23 @@ public class RedirectPlus extends Plugin {
         configurationHelper.runLoopCheck();
         configurationHelper.runAliasCheck();
 
-        if(configurationHelper.isFatal()) {
+        // Print errors if there are any.
+        if(configurationHelper.hasErrors())
+            configurationHelper.printErrors();
+
+        // Check if the plugin can safely be enabled or if action should be undertaken before we allow it.
+        if(configurationHelper.isFatalError()) {
             this.disabled = true;
             getProxy().getPluginManager().unregisterListeners(this);
             return;
         }
+
+        getLogger().info("Creating event listeners...");
+        registerEvents();
+
+        getLogger().info("Registering plugin message channel...");
+        getProxy().registerChannel(CHANNEL_NAME);
+
 
         getLogger().info("Creating bStats.org metrics...");
         metrics = new Metrics(this);

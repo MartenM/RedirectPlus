@@ -2,7 +2,9 @@ package nl.martenm.redirectplus.objects;
 
 import nl.martenm.redirectplus.RedirectPlus;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -15,7 +17,8 @@ public class ConfigurationHelper {
 
     private RedirectPlus plugin;
 
-    private boolean fatal = false;
+    private List<ConfigurationError> errors = new ArrayList<>();
+    private boolean fatalError = false;
 
     public ConfigurationHelper(RedirectPlus plugin) {
         this.plugin = plugin;
@@ -40,10 +43,9 @@ public class ConfigurationHelper {
                 ServerGroup next = current.getParent();
                 if(visited.get(next) == id) {
                     // Loop detected. Unlink and notify.
-                    next.setParent(null);
-                    throwError(new String[] {
+                    registerError(new String[] {
                             "An loop was detected in your configuration of parent groups.",
-                            "The parent group of " + next.getName() + " has been set to 'None'."},
+                            "Please change the parent group of '" + next.getName() + "' so that there are no loops."},
                             true);
                 }
 
@@ -66,7 +68,7 @@ public class ConfigurationHelper {
                     // We don't undo this, since it's not really creating any errors, but we notify the server
                     // owner anyway.
 
-                    throwError(new String[] {
+                    registerError(new String[] {
                             "Found server groups that share the same alias: '" + alias + "'.",
                             "Server groups: '" + aliases.get(alias).getName() + "' and '" + serverGroup.getName() + "'"
                     }, false);
@@ -78,21 +80,33 @@ public class ConfigurationHelper {
         }
     }
 
-    private void throwError(String[] messages, boolean fatal) {
+    private void registerError(String[] messages, boolean fatal) {
+        if(fatal) {
+            this.fatalError = true;
+        }
+
+        this.errors.add(new ConfigurationError(messages, fatal));
+    }
+
+    public void printErrors() {
         plugin.getLogger().warning("==================[ Redirect Plus - Configuration Error ]====================");
         plugin.getLogger().warning("      There is an error in your configuration, please solve this error asp:");
         plugin.getLogger().warning(" ");
 
-        for(String m : messages) {
-            plugin.getLogger().warning(m);
+        // Print all errors.
+        for(ConfigurationError error : errors) {
+            if(error.isFatal()) {
+                plugin.getLogger().info("FATAL:   (this error will disable the plugin)");
+            }
+
+            for(String m : error.getMessages()) {
+                plugin.getLogger().warning(m);
+            }
+
+            plugin.getLogger().info(" ");
         }
 
-        plugin.getLogger().warning(" ");
-
-        if(fatal) {
-            // Set fatal to true to be retrieved.
-            this.fatal = true;
-
+        if(fatalError) {
             plugin.getLogger().warning("                                FATAL");
             plugin.getLogger().warning("             The error prevented the plugin from loading.");
             plugin.getLogger().warning("        Please fix the error and restart your BungeeCord server.");
@@ -103,7 +117,11 @@ public class ConfigurationHelper {
     }
 
 
-    public boolean isFatal() {
-        return fatal;
+    public boolean isFatalError() {
+        return fatalError;
+    }
+
+    public boolean hasErrors() {
+        return errors.size() > 0;
     }
 }
