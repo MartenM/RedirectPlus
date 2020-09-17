@@ -259,6 +259,19 @@ public class RedirectPlus extends Plugin {
 
             for (String serverName : settings.getStringList("servers")) {
                 RedirectServerWrapper server = servers.get(serverName);
+                ServerInfo info = getProxy().getServerInfo(serverName);
+
+                if (info == null) {
+                    getLogger().warning(String.format("The server %s was not found when attempting to disable aliases.", serverName));
+                    continue;
+                }
+
+                if (server == null) {
+                    server = new RedirectServerWrapper(info);
+                    servers.put(serverName, server);
+                    continue;
+                }
+
                 server.setAllowAliases(false);
             }
 

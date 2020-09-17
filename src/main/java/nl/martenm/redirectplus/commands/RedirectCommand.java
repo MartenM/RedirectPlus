@@ -71,7 +71,7 @@ public class RedirectCommand extends Command {
             {
                 commandSender.sendMessage(TextComponent.fromLegacyText(ChatColor.WHITE + ChatColor.BOLD.toString() + server.getServerInfo().getName() + colourMode + ": "));
                 commandSender.sendMessage(TextComponent.fromLegacyText(colourMode + "  Status: " + (server.isOnline() ? ChatColor.GREEN + "Online" : ChatColor.RED + "Offline")));
-                commandSender.sendMessage(TextComponent.fromLegacyText(colourMode + "  Group: " + ChatColor.YELLOW + server.getServerGroup().getName()));
+                commandSender.sendMessage(TextComponent.fromLegacyText(colourMode + "  Group: " + (server.getServerGroup() != null ? ChatColor.YELLOW + server.getServerGroup().getName() : ChatColor.RED + "None")));
                 commandSender.sendMessage(TextComponent.fromLegacyText(colourMode + "  Receives Redirects: " + (server.isRedirectable() ? ChatColor.GREEN + "Yes" : ChatColor.YELLOW + "No")));
                 commandSender.sendMessage(TextComponent.fromLegacyText(colourMode + "  Players (aprox): " + (server.getOnlinePlayersCount() == 0 ? ChatColor.RED.toString() + server.getOnlinePlayersCount() : ChatColor.YELLOW.toString() + server.getOnlinePlayersCount())));
 
