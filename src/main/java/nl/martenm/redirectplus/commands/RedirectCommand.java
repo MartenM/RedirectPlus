@@ -75,6 +75,10 @@ public class RedirectCommand extends Command {
                 commandSender.sendMessage(TextComponent.fromLegacyText(colourMode + "  Receives Redirects: " + (server.isRedirectable() ? ChatColor.GREEN + "Yes" : ChatColor.YELLOW + "No")));
                 commandSender.sendMessage(TextComponent.fromLegacyText(colourMode + "  Players (aprox): " + (server.getOnlinePlayersCount() == 0 ? ChatColor.RED.toString() + server.getOnlinePlayersCount() : ChatColor.YELLOW.toString() + server.getOnlinePlayersCount())));
 
+                if(!server.isAllowAliases()) {
+                    commandSender.sendMessage(TextComponent.fromLegacyText(colourMode + "  Aliases disabled: " + ChatColor.RED + "YES"));
+                }
+
                 commandSender.sendMessage(TextComponent.fromLegacyText(colourMode + "  Moth: " + colourMode + server.getServerInfo().getMotd()));
                 commandSender.sendMessage(TextComponent.fromLegacyText(colourMode + " "));
             }
