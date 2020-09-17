@@ -76,9 +76,19 @@ public class ChatEventListener implements Listener {
         ServerGroup currentServerGroup = null;
         RedirectServerWrapper currentServerWrapper = plugin.getServer(currentServer.getName());
 
+        // Check if the player is in the same server group as the destination
+        // And check if the alias exection is allowed by the server.
         if(currentServerWrapper != null) {
-            currentServerGroup = currentServerWrapper.getServerGroup();
 
+            if (!currentServerWrapper.isAllowAliases()) {
+                for (String message : plugin.getConfig().getStringList("messages.alias-not-allowed-server")) {
+                    message = ChatColor.translateAlternateColorCodes('&', message);
+                    proxiedPlayer.sendMessage(TextComponent.fromLegacyText(message));
+                }
+                return true;
+            }
+
+            currentServerGroup = currentServerWrapper.getServerGroup();
             if(serverGroup == currentServerGroup && serverGroup.getAvailableServersSize() <= 1) {
                 if(serverGroup.getServers().get(0) == currentServerWrapper || serverGroup.getAvailableServersSize() == 0) {
                     for (String message : plugin.getConfig().getStringList("messages.unable-redirect-alias-same-category")) {
