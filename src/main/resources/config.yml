@@ -17,6 +17,8 @@ messages:
     - "&f"
   alias-no-permission:
     - "&cYou don't have enough permissions to join this server group."
+  alias-not-allowed-server:
+    - "&cYou cannot use that command here!"
 
 # The amount of time between checking if a server is online.
 # Players won't be connected to offline servers.
@@ -45,6 +47,16 @@ detect-shutdown:
 # Can be useful when redirecting people from a game lobby and stuff.
 no-messages:
   - "[Silent]"
+
+# Disable the uses of aliases on specific servers.
+# Useful when having auth servers and AuthMe is not installed on the BungeeCord
+disable-aliases:
+  # A list of servers to disable the aliases on.
+  servers:
+    - someserver1
+    - someserver2
+  # Regex to identify these servers.
+  regex: "none"
 
 # unknown-group / server
 # This will redirect unknown servers to the group listed here:

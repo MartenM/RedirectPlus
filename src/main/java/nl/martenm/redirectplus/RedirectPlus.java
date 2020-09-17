@@ -247,6 +247,25 @@ public class RedirectPlus extends Plugin {
             serverGroups.add(serverGroup);
         }
 
+        // For each server check if they have aliases disabled.
+        if (getConfig().getSection("disable-aliases") != null) {
+            Configuration settings = getConfig().getSection("disable-aliases");
+
+            for (String serverName : settings.getStringList("servers")) {
+                RedirectServerWrapper server = servers.get(serverName);
+                server.setAllowAliases(false);
+            }
+
+
+            String regex = settings.getString("regex");
+            if (!regex.equalsIgnoreCase("none")) {
+                for (RedirectServerWrapper server : servers.values()) {
+                    if (server.getServerInfo().getName().matches(regex)) {
+                        server.setAllowAliases(false);
+                    }
+                }
+            }
+        }
 
         // Start checker task to see if servers are online / offline
         if(checker != null){

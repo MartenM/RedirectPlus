@@ -16,6 +16,8 @@ public class RedirectServerWrapper {
     private boolean redirectable;
     private int onlinePlayersCount;
 
+    private boolean allowAliases = true;
+
     public RedirectServerWrapper(ServerInfo serverInfo){
         this(serverInfo, null, false);
     }
@@ -75,5 +77,18 @@ public class RedirectServerWrapper {
      */
     public void removeProxiedPlayer() {
         onlinePlayersCount--;
+    }
+
+    /**
+     * Set if people should be able to use aliases on this server.
+     * @return
+     */
+    public boolean isAllowAliases() {
+        return allowAliases;
+    }
+
+    
+    public void setAllowAliases(boolean allowAliases) {
+        this.allowAliases = allowAliases;
     }
 }
