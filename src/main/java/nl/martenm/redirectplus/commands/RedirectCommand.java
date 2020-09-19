@@ -34,7 +34,7 @@ public class RedirectCommand extends Command {
 
         if(plugin.isDisabled()) {
             sendHeader(commandSender, colourMode);
-            commandSender.sendMessage(TextComponent.fromLegacyText(ChatColor.RED + "  " + "The plugin has been disabled due to fatal errors."));
+            commandSender.sendMessage(TextComponent.fromLegacyText(ChatColor.RED + "  " + "The plugin has been disabled due to configuration errors."));
             commandSender.sendMessage(TextComponent.fromLegacyText(ChatColor.RED + "  " + "Please check the console for more information.."));
             return;
         }

@@ -45,8 +45,10 @@ public class ConfigurationHelper {
                     // Loop detected. Unlink and notify.
                     registerError(new String[] {
                             "An loop was detected in your configuration of parent groups.",
-                            "Please change the parent group of '" + next.getName() + "' so that there are no loops."},
+                            "Please change the parent group of '" + next.getName() + "' so that there are no loops.",
+                            "Loops are currently not supported since it could lead to infinite redirects!"},
                             true);
+                    break;
                 }
 
                 current = next;
@@ -94,16 +96,20 @@ public class ConfigurationHelper {
         plugin.getLogger().warning(" ");
 
         // Print all errors.
-        for(ConfigurationError error : errors) {
+        for(int i = 0; i < errors.size(); i++) {
+            ConfigurationError error = errors.get(i);
+
+            plugin.getLogger().warning(String.format(" %d.", i + 1));
+
             if(error.isFatal()) {
-                plugin.getLogger().info("FATAL:   (this error will disable the plugin)");
+                plugin.getLogger().warning("FATAL:   (this error will disable the plugin)");
             }
 
             for(String m : error.getMessages()) {
                 plugin.getLogger().warning(m);
             }
 
-            plugin.getLogger().info(" ");
+            plugin.getLogger().warning(" ");
         }
 
         if(fatalError) {
