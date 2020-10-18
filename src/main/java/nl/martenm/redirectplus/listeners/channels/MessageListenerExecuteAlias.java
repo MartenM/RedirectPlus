@@ -34,6 +34,10 @@ public class MessageListenerExecuteAlias implements Listener {
 
     @EventHandler
     public void messageReceived(PluginMessageEvent event) {
+        if(event.isCancelled()) {
+            return;
+        }
+        
         if(!event.getTag().equalsIgnoreCase(RedirectPlus.CHANNEL_NAME)) return;
 
         ByteArrayDataInput in = ByteStreams.newDataInput(event.getData());
