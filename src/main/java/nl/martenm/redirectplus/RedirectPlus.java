@@ -81,7 +81,7 @@ public class RedirectPlus extends Plugin {
 
 
         getLogger().info("Creating bStats.org metrics...");
-        metrics = new Metrics(this);
+        metrics = new Metrics(this, 2095);
 
         getLogger().info("Successfully enabled Redirect Plus.");
     }
