@@ -318,7 +318,7 @@ public class RedirectPlus extends Plugin {
 
                     if(throwable == null) {
                         server.setOnline(true);
-                        server.setOnlinePlayersCount(serverPing.getPlayers().getOnline());
+                        server.setOnlinePlayersCount(info.getPlayers().size());
                     } else {
                         server.setOnline(false);
                         server.setOnlinePlayersCount(0);
