@@ -8,6 +8,7 @@ import nl.martenm.redirectplus.enums.SpreadMode;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -283,5 +284,18 @@ public class ServerGroup {
      */
     public boolean isRestricted() {
         return permission != null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ServerGroup that = (ServerGroup) o;
+        return name.equals(that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 }

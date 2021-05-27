@@ -2,6 +2,8 @@ package nl.martenm.redirectplus.objects;
 
 import net.md_5.bungee.api.config.ServerInfo;
 
+import java.util.Objects;
+
 /**
  * The <strong>RedirectServerWrapper</strong> holds information about redirect servers.
  * These instances only made once (when the plugin is loaded).
@@ -90,5 +92,18 @@ public class RedirectServerWrapper {
     
     public void setAllowAliases(boolean allowAliases) {
         this.allowAliases = allowAliases;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RedirectServerWrapper that = (RedirectServerWrapper) o;
+        return serverInfo.equals(that.serverInfo);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(serverInfo);
     }
 }
