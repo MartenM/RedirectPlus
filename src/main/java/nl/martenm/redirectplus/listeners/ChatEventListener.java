@@ -92,8 +92,12 @@ public class ChatEventListener implements Listener {
 
             // Possibly the same server group and only one server.
             // In that case redirection is not possible.
-            if(serverGroup.equals(currentServerGroup) && serverGroup.getAvailableServersSize() == 1) {
-                if(serverGroup.getServers().get(0).equals(currentServerWrapper) || serverGroup.getAvailableServersSize() == 0) {
+
+            // Check if the is the same and the amount of servers is 1
+            if(serverGroup.equals(currentServerGroup) && serverGroup.getAvailableServersSize() <= 1) {
+
+                // Check if the server group is the same OR if if the server group has 0 available servers.
+                if(serverGroup.getAvailableServersSize() == 0 || serverGroup.getServers().get(0).equals(currentServerWrapper)) {
                     for (String message : plugin.getConfig().getStringList("messages.unable-redirect-alias-same-category")) {
                         message = ChatColor.translateAlternateColorCodes('&', message);
                         proxiedPlayer.sendMessage(TextComponent.fromLegacyText(message));
