@@ -1,6 +1,6 @@
 name: RedirectPlus
 main: nl.martenm.redirectplus.RedirectPlus
-version: 2.11.4
+version: ${project.version}
 author: MartenM
 commands:
   redirect:
