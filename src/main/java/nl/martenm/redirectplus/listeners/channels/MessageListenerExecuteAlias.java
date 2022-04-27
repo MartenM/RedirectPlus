@@ -2,20 +2,11 @@ package nl.martenm.redirectplus.listeners.channels;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import nl.martenm.redirectplus.RedirectPlus;
-import nl.martenm.redirectplus.api.events.ProxiedPlayerGroupAliasExecuted;
-import nl.martenm.redirectplus.listeners.ChatEventListener;
-import nl.martenm.redirectplus.objects.RedirectServerWrapper;
-import nl.martenm.redirectplus.objects.ServerGroup;
 
 /**
  * This class allows other plugins to use the BungeeCord plugin messaging system to send people to a certain server group.
@@ -54,6 +45,6 @@ public class MessageListenerExecuteAlias implements Listener {
             return;
         }
 
-        ChatEventListener.handleAliasExecution(plugin, alias, proxiedPlayer);
+        plugin.getAliasManager().handleAliasExecution(alias, proxiedPlayer);
     }
 }

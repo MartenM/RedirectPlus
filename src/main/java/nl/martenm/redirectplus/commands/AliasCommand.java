@@ -1,91 +1,60 @@
-package nl.martenm.redirectplus.listeners;
+package nl.martenm.redirectplus.commands;
 
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.event.ChatEvent;
-import net.md_5.bungee.api.plugin.Listener;
-import net.md_5.bungee.event.EventHandler;
+import net.md_5.bungee.api.plugin.Command;
 import nl.martenm.redirectplus.RedirectPlus;
 import nl.martenm.redirectplus.api.events.ProxiedPlayerGroupAliasExecuted;
 import nl.martenm.redirectplus.objects.RedirectServerWrapper;
 import nl.martenm.redirectplus.objects.ServerGroup;
 
-import java.util.Arrays;
-
-/**
- * @author MartenM
- * @since 22-6-2018.
- */
-public class ChatEventListener implements Listener {
+public class AliasCommand extends Command {
 
     private RedirectPlus plugin;
-    public ChatEventListener (RedirectPlus plugin) {
+    private ServerGroup serverGroup;
+
+    public AliasCommand(RedirectPlus plugin, ServerGroup serverGroup, String name, String permission, String... aliases) {
+        super(name, permission, aliases);
         this.plugin = plugin;
+        this.serverGroup = serverGroup;
     }
 
-    @EventHandler
-    public void handleChatEvent(ChatEvent event) {
-        
-        if(event.isCancelled()) return;
-
-        if(!event.getMessage().startsWith("/")) {
+    @Override
+    public void execute(CommandSender sender, String[] strings) {
+        if(!(sender instanceof ProxiedPlayer)) {
+            sender.sendMessage(TextComponent.fromLegacyText("&cOnly the sender can execute a redirect command."));
             return;
         }
 
-        String[] args = event.getMessage().substring(1).split(" ");
-        if(args.length == 0) {
-            return;
-        }
-
-        if(!(event.getSender() instanceof ProxiedPlayer)) {
-            // Only console player senders.
-            return;
-        }
-
-        ProxiedPlayer proxiedPlayer = (ProxiedPlayer) event.getSender();
-        event.setCancelled(handleAliasExecution(plugin, args[0], proxiedPlayer));
-    }
-
-    public static boolean handleAliasExecution(RedirectPlus plugin, String command, ProxiedPlayer proxiedPlayer) {
-        ServerGroup serverGroup = null;
-        for(ServerGroup sg : plugin.getServerGroups()) {
-            if(Arrays.stream(sg.getAliases()).anyMatch(alias -> alias.equalsIgnoreCase(command))) {
-                serverGroup = sg;
-                break;
-            }
-        }
-
-        if(serverGroup == null) {
-            return false;
-        }
+        ProxiedPlayer player = (ProxiedPlayer) sender;
 
         if(serverGroup.isRestricted()) {
-            if(!proxiedPlayer.hasPermission(serverGroup.getPermission())) {
+            if(!player.hasPermission(serverGroup.getPermission())) {
                 for (String message : plugin.getConfig().getStringList("messages.alias-no-permission")) {
                     message = ChatColor.translateAlternateColorCodes('&', message);
-                    proxiedPlayer.sendMessage(TextComponent.fromLegacyText(message));
+                    player.sendMessage(TextComponent.fromLegacyText(message));
                 }
-                return true;
+                return;
             }
         }
 
-        ServerInfo currentServer = proxiedPlayer.getServer().getInfo();
+        ServerInfo currentServer = player.getServer().getInfo();
         ServerGroup currentServerGroup = null;
         RedirectServerWrapper currentServerWrapper = plugin.getServer(currentServer.getName());
 
         // Check if the player is in the same server group as the destination
-        // And check if the alias exection is allowed by the server.
+        // And check if the alias execution is allowed by the server.
         if(currentServerWrapper != null) {
 
             if (!currentServerWrapper.isAllowAliases()) {
                 for (String message : plugin.getConfig().getStringList("messages.alias-not-allowed-server")) {
                     message = ChatColor.translateAlternateColorCodes('&', message);
-                    proxiedPlayer.sendMessage(TextComponent.fromLegacyText(message));
+                    player.sendMessage(TextComponent.fromLegacyText(message));
                 }
-                return true;
+                return;
             }
 
             currentServerGroup = currentServerWrapper.getServerGroup();
@@ -100,39 +69,36 @@ public class ChatEventListener implements Listener {
                 if(serverGroup.getAvailableServersSize() == 0 || serverGroup.getServers().get(0).equals(currentServerWrapper)) {
                     for (String message : plugin.getConfig().getStringList("messages.unable-redirect-alias-same-category")) {
                         message = ChatColor.translateAlternateColorCodes('&', message);
-                        proxiedPlayer.sendMessage(TextComponent.fromLegacyText(message));
+                        player.sendMessage(TextComponent.fromLegacyText(message));
                     }
-                    return true;
+                    return;
                 }
             }
         }
 
-        RedirectServerWrapper server = serverGroup.getRedirectServer(proxiedPlayer, proxiedPlayer.getServer().getInfo().getName(), false, serverGroup.getSpreadMode());
+        RedirectServerWrapper server = serverGroup.getRedirectServer(player, player.getServer().getInfo().getName(), false, serverGroup.getSpreadMode());
 
         if(server == null) {
             for (String message : plugin.getConfig().getStringList("messages.unable-redirect-alias")) {
                 message = ChatColor.translateAlternateColorCodes('&', message);
-                proxiedPlayer.sendMessage(TextComponent.fromLegacyText(message));
+                player.sendMessage(TextComponent.fromLegacyText(message));
             }
-            return true;
+            return;
         }
 
         // Redirect API
-        ProxiedPlayerGroupAliasExecuted apiEvent = new ProxiedPlayerGroupAliasExecuted(proxiedPlayer, command, currentServerGroup, server);
+        ProxiedPlayerGroupAliasExecuted apiEvent = new ProxiedPlayerGroupAliasExecuted(player, getName(), currentServerGroup, server);
         plugin.getProxy().getPluginManager().callEvent(apiEvent);
 
         if(apiEvent.isCancelled()) {
-            return false;
+            return;
         }
         //
 
-        proxiedPlayer.connect(server.getServerInfo());
+        player.connect(server.getServerInfo());
         server.addProxiedPlayer();
         if(currentServerWrapper != null) {
             currentServerWrapper.removeProxiedPlayer();
         }
-
-        return true;
     }
-
 }

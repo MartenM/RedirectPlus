@@ -2,6 +2,7 @@ package nl.martenm.redirectplus;
 
 import com.google.common.io.ByteStreams;
 import net.md_5.bungee.api.config.ServerInfo;
+import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
@@ -9,21 +10,19 @@ import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 import nl.martenm.redirectplus.api.events.RedirectServerStatusChangeEvent;
+import nl.martenm.redirectplus.commands.AliasCommand;
 import nl.martenm.redirectplus.commands.RedirectCommand;
 import nl.martenm.redirectplus.enums.SpreadMode;
-import nl.martenm.redirectplus.listeners.ChatEventListener;
 import nl.martenm.redirectplus.listeners.PlayerKickListener;
 import nl.martenm.redirectplus.listeners.channels.MessageListenerExecuteAlias;
+import nl.martenm.redirectplus.managers.AliasManager;
 import nl.martenm.redirectplus.metrics.Metrics;
 import nl.martenm.redirectplus.objects.ConfigurationHelper;
 import nl.martenm.redirectplus.objects.RedirectServerWrapper;
 import nl.martenm.redirectplus.objects.ServerGroup;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -42,11 +41,14 @@ public class RedirectPlus extends Plugin {
     private Metrics metrics = null;
     private boolean disabled = false;
 
+    private AliasManager aliasManager;
+
     @Override
     public void onEnable() {
 
         servers = new HashMap<>();
         serverGroups = new ArrayList<>();
+        aliasManager = new AliasManager(this);
 
         getLogger().info("Registering config...");
         registerConfig();
@@ -90,6 +92,10 @@ public class RedirectPlus extends Plugin {
     public void onDisable() {
         this.disabled = true;
         checker.cancel();
+
+        // In case someone decides to reload...
+        aliasManager.deregisterAliasCommand();
+
         getLogger().info("Disabling. Thanks for using the plugin!");
     }
 
@@ -124,7 +130,6 @@ public class RedirectPlus extends Plugin {
 
     private void registerEvents(){
         getProxy().getPluginManager().registerListener(this, new PlayerKickListener(this));
-        getProxy().getPluginManager().registerListener(this, new ChatEventListener(this));
         getProxy().getPluginManager().registerListener(this, new MessageListenerExecuteAlias(this));
     }
 
@@ -294,6 +299,8 @@ public class RedirectPlus extends Plugin {
         checker = getProxy().getScheduler().schedule(this, () -> {
             updateServers();
         }, 0, config.getInt("check"), TimeUnit.SECONDS);
+
+        aliasManager.registerAliasCommands();
     }
 
     public void updateServers() {
@@ -353,6 +360,7 @@ public class RedirectPlus extends Plugin {
     public void reload(){
         serverGroups.clear();
         servers.clear();
+        aliasManager.deregisterAliasCommand();
 
         registerConfig();
         setup();
@@ -396,5 +404,9 @@ public class RedirectPlus extends Plugin {
 
     public boolean isDisabled() {
         return disabled;
+    }
+
+    public AliasManager getAliasManager() {
+        return aliasManager;
     }
 }
