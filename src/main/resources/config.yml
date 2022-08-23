@@ -125,7 +125,24 @@ log:
   # If set to true the plugin will log any cancelled redirect attempts due to inactive connections.
   inactive: true
 
-# EXAMPLE SETUP
+# EXAMPLE SETUP -|- LOBBY with SURIVAL server /lobby command
+#groups:
+#  # The main lobby. If kicked from here they should not be redirected so we enable bottom-kick.
+#  # There are no connected servers here.
+#  main-group:
+#    bottom-kick: true
+#    spread: true
+#    parent-group: none
+#    servers:
+#      - lobby
+#    connected:
+#      - survival
+#    # Aliases can be used to redirect people to the server group when they use a certain command (Eg: lobby, hub, survival, towny, etc)
+#    aliases:
+#      - hub
+#      - lobby
+
+# EXAMPLE SETUP -|- MINI-GAME SERVER
 #groups:
 #  # The main lobby. If kicked from here they should not be redirected so we enable bottom-kick.
 #  # There are no connected servers here.
